@@ -1,0 +1,1891 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>PTY1015 CA2 — Objective Result Lookup</title>
+<style>
+:root{
+  --ink:#1b1e23;
+  --ink-soft:#5b6470;
+  --paper:#fafaf8;
+  --panel:#ffffff;
+  --line:#e3e2dd;
+  --accent:#0e6e5c;
+  --accent-soft:#e6f1ee;
+  --caution:#b45309;
+  --caution-soft:#fdf3e7;
+  --danger:#b3261e;
+  --radius:10px;
+  --fs-base:16px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
+  background:var(--paper);
+  color:var(--ink);
+  font-size:var(--fs-base);
+  line-height:1.45;
+  -webkit-font-smoothing:antialiased;
+}
+button{font-family:inherit;cursor:pointer}
+input,select,textarea{font-family:inherit;font-size:1rem}
+.screen{display:none;min-height:100vh}
+.screen.active{display:block}
+
+/* ---------- shared ---------- */
+.btn{
+  display:inline-flex;align-items:center;gap:.4em;
+  border:1px solid var(--line);background:var(--panel);color:var(--ink);
+  padding:.55em 1em;border-radius:var(--radius);font-size:.95rem;font-weight:500;
+}
+.btn:hover{border-color:var(--ink-soft)}
+.btn:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{
+  outline:2px solid var(--accent);outline-offset:2px;
+}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.primary:hover{background:#0a5a4b}
+.btn.danger{color:var(--danger);border-color:#e6c4c2}
+.btn.small{padding:.3em .65em;font-size:.82rem;border-radius:7px}
+.btn.ghost{border-color:transparent;background:transparent;color:var(--ink-soft)}
+.btn.ghost:hover{color:var(--ink)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.field{margin-bottom:1rem}
+.field label{display:block;font-size:.82rem;font-weight:600;color:var(--ink-soft);
+  text-transform:uppercase;letter-spacing:.04em;margin-bottom:.35rem}
+.field input[type=text],.field input[type=password],.field input[type=number],
+.field select,.field textarea{
+  width:100%;padding:.6em .75em;border:1px solid var(--line);border-radius:var(--radius);
+  background:#fff;color:var(--ink);
+}
+.field textarea{min-height:5em;resize:vertical}
+.muted{color:var(--ink-soft)}
+.tag{display:inline-block;font-size:.72rem;font-weight:600;letter-spacing:.03em;
+  padding:.15em .55em;border-radius:99px;background:var(--accent-soft);color:var(--accent)}
+.tag.warn{background:var(--caution-soft);color:var(--caution)}
+.tag.grey{background:#eeede9;color:var(--ink-soft)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+  padding:1rem 1.1rem}
+hr.sep{border:none;border-top:1px solid var(--line);margin:1rem 0}
+.row{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap}
+.spread{display:flex;justify-content:space-between;align-items:center;gap:.6rem;flex-wrap:wrap}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
+@media(max-width:680px){.grid2{grid-template-columns:1fr}}
+
+/* ---------- role screen ---------- */
+#s-role{display:none}
+#s-role.active{display:flex;align-items:center;justify-content:center;padding:2rem}
+.role-box{max-width:420px;width:100%;text-align:center}
+.role-box h1{font-size:1.5rem;margin-bottom:.25rem;letter-spacing:-.01em}
+.role-box .sub{color:var(--ink-soft);margin-bottom:2rem}
+.role-btn{display:block;width:100%;padding:1.1rem;margin-bottom:.8rem;font-size:1.05rem;
+  border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);font-weight:600}
+.role-btn:hover{border-color:var(--accent);color:var(--accent)}
+
+/* ---------- centred forms ---------- */
+.centred{align-items:center;justify-content:center;min-height:100vh;padding:2rem}
+.screen.centred.active{display:flex}
+.form-box{max-width:440px;width:100%;background:var(--panel);border:1px solid var(--line);
+  border-radius:14px;padding:1.8rem}
+.form-box h2{font-size:1.2rem;margin-bottom:1.2rem}
+
+/* ---------- SP screen ---------- */
+#s-sp{padding-bottom:4rem}
+.sp-header{
+  position:sticky;top:0;z-index:20;background:var(--panel);
+  border-bottom:1px solid var(--line);padding:.7rem 1rem;
+}
+.sp-header .meta{display:flex;gap:1.2rem;flex-wrap:wrap;align-items:baseline}
+.sp-header .meta b{font-weight:700}
+.sp-header .label{font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;
+  color:var(--ink-soft);display:block}
+.fontsize-ctl{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.fontsize-ctl button{border:none;background:#fff;padding:.35em .7em;font-size:.85rem;border-right:1px solid var(--line)}
+.fontsize-ctl button:last-child{border-right:none}
+.fontsize-ctl button.on{background:var(--accent);color:#fff}
+.sp-body{max-width:880px;margin:0 auto;padding:1.2rem 1rem}
+.searchwrap{position:relative;margin-bottom:1.2rem}
+#sp-search{
+  width:100%;padding:.85em 1em .85em 2.6em;font-size:1.1rem;
+  border:2px solid var(--line);border-radius:12px;background:#fff;
+}
+#sp-search:focus{border-color:var(--accent)}
+.searchwrap .icon{position:absolute;left:.9em;top:50%;transform:translateY(-50%);color:var(--ink-soft)}
+.breadcrumb{margin-bottom:.9rem;font-size:.92rem;color:var(--ink-soft)}
+.breadcrumb a{color:var(--accent);text-decoration:none;cursor:pointer}
+.breadcrumb a:hover{text-decoration:underline}
+.tile-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.7rem}
+.tile{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+  padding:.95rem 1rem;text-align:left;font-size:1rem;font-weight:600}
+.tile:hover{border-color:var(--accent);color:var(--accent)}
+.tile .count{display:block;font-size:.78rem;font-weight:400;color:var(--ink-soft);margin-top:.2rem}
+.preview{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+  padding:.85rem 1rem;margin-bottom:.6rem;display:flex;justify-content:space-between;
+  align-items:center;gap:1rem;flex-wrap:wrap}
+.preview .pname{font-weight:700;font-size:1.05rem}
+.preview .pmeta{font-size:.82rem;color:var(--ink-soft);margin-top:.15rem}
+.preview .paliases{font-size:.82rem;color:var(--ink-soft)}
+.empty-note{color:var(--ink-soft);padding:1.4rem 0;text-align:center}
+
+/* ---------- result overlay ---------- */
+.overlay{position:fixed;inset:0;background:rgba(20,22,26,.45);z-index:50;display:none;
+  align-items:flex-start;justify-content:center;padding:2rem 1rem;overflow-y:auto}
+.overlay.open{display:flex}
+.result-card{background:var(--panel);border-radius:16px;max-width:760px;width:100%;
+  padding:1.6rem 1.7rem;position:relative}
+.result-card .closer{position:absolute;top:.9rem;right:.9rem}
+.result-card h2{font-size:1.45rem;letter-spacing:-.01em;margin-bottom:.15rem;padding-right:2.5rem}
+.result-card .rc-meta{color:var(--ink-soft);font-size:.88rem;margin-bottom:.9rem}
+.sidesel{display:flex;gap:.5rem;margin:.9rem 0 1.1rem;flex-wrap:wrap}
+.sidesel button{padding:.55em 1.3em;border-radius:99px;border:1.5px solid var(--line);
+  background:#fff;font-weight:600;font-size:.95rem}
+.sidesel button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.result-block{border:1px solid var(--line);border-left:4px solid var(--accent);
+  border-radius:8px;padding:1rem 1.1rem;margin-bottom:.8rem;background:#fff}
+.result-block .side-lab{font-size:.72rem;font-weight:700;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--accent);margin-bottom:.3rem}
+.result-block .rtext{font-size:1.15rem;font-weight:500;white-space:pre-line}
+.result-block .pwording{margin-top:.6rem;font-style:italic;color:var(--ink-soft)}
+.result-block .pwording::before{content:"Patient says: ";font-style:normal;font-weight:600;
+  font-size:.8rem;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-soft)}
+.caution-block{background:var(--caution-soft);border:1px solid #f0ddc2;border-radius:8px;
+  padding:.7rem 1rem;color:var(--caution);font-size:.92rem;margin-top:.4rem}
+.caution-block b{text-transform:uppercase;font-size:.75rem;letter-spacing:.05em}
+.logged-note{font-size:.78rem;color:var(--ink-soft);margin-top:1rem;display:flex;gap:.4em;align-items:center}
+
+/* SP font scaling */
+#s-sp[data-fs="m"]{--fs-base:18px}
+#s-sp[data-fs="l"]{--fs-base:21px}
+#s-sp[data-fs="xl"]{--fs-base:25px}
+#s-sp[data-fs]{font-size:var(--fs-base)}
+#s-sp .result-block .rtext{font-size:1.25em}
+
+/* ---------- admin ---------- */
+.admin-top{background:var(--ink);color:#fff;padding:.75rem 1.2rem;display:flex;
+  justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap}
+.admin-top h1{font-size:1.02rem;font-weight:600;letter-spacing:.01em}
+.admin-top .btn{background:transparent;color:#d6d8db;border-color:#3a3f47}
+.admin-top .btn:hover{color:#fff;border-color:#777}
+.tabs{display:flex;gap:.15rem;background:var(--panel);border-bottom:1px solid var(--line);
+  padding:0 1.2rem;overflow-x:auto}
+.tabs button{border:none;background:none;padding:.8em 1em;font-size:.93rem;font-weight:600;
+  color:var(--ink-soft);border-bottom:2.5px solid transparent;white-space:nowrap}
+.tabs button.on{color:var(--accent);border-bottom-color:var(--accent)}
+.admin-body{max-width:1080px;margin:0 auto;padding:1.4rem 1.2rem 4rem}
+table.data{width:100%;border-collapse:collapse;font-size:.86rem;background:var(--panel);
+  border:1px solid var(--line);border-radius:var(--radius)}
+table.data th,table.data td{padding:.5em .65em;border-bottom:1px solid var(--line);
+  text-align:left;vertical-align:top}
+table.data th{font-size:.72rem;text-transform:uppercase;letter-spacing:.04em;
+  color:var(--ink-soft);background:#f4f3ef}
+table.data tr:last-child td{border-bottom:none}
+.list-item{display:flex;justify-content:space-between;align-items:center;gap:.6rem;
+  padding:.55rem .7rem;border:1px solid var(--line);border-radius:8px;margin-bottom:.45rem;
+  background:var(--panel);flex-wrap:wrap}
+.list-item .li-name{font-weight:600}
+.list-item.sub{margin-left:1.4rem;background:#fcfcfa}
+.editor-cols{display:grid;grid-template-columns:340px 1fr;gap:1.2rem}
+@media(max-width:860px){.editor-cols{grid-template-columns:1fr}}
+.panel-h{font-size:.8rem;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-soft);
+  font-weight:700;margin:1.1rem 0 .5rem}
+.modal{position:fixed;inset:0;background:rgba(20,22,26,.45);z-index:60;display:none;
+  align-items:flex-start;justify-content:center;padding:2rem 1rem;overflow-y:auto}
+.modal.open{display:flex}
+.modal-box{background:var(--panel);border-radius:14px;max-width:720px;width:100%;padding:1.5rem 1.6rem}
+.modal-box h3{margin-bottom:1rem}
+.filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.6rem;margin-bottom:1rem}
+.filters .field{margin-bottom:0}
+.kpi-row{display:flex;gap:.8rem;flex-wrap:wrap;margin-bottom:1rem}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+  padding:.7rem 1rem;min-width:120px}
+.kpi b{display:block;font-size:1.3rem}
+.kpi span{font-size:.78rem;color:var(--ink-soft)}
+.io-block{margin-bottom:1.6rem}
+.toast{position:fixed;bottom:1.2rem;left:50%;transform:translateX(-50%);
+  background:var(--ink);color:#fff;padding:.6em 1.2em;border-radius:99px;font-size:.9rem;
+  z-index:99;opacity:0;transition:opacity .25s;pointer-events:none}
+.toast.show{opacity:1}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+
+<!-- ================= ROLE SELECT ================= -->
+<div class="screen" id="s-role">
+  <div class="role-box">
+    <h1>PTY1015 CA2 — Objective Result Lookup</h1>
+    <p class="sub">Standardised result bank for practical case assessment</p>
+    <button class="role-btn" onclick="App.gotoSPSetup()">SP / Examiner</button>
+    <button class="role-btn" onclick="App.gotoAdminLogin()">Admin</button>
+  </div>
+</div>
+
+<!-- ================= SP SESSION SETUP ================= -->
+<div class="screen centred" id="s-sp-setup">
+  <div class="form-box">
+    <h2>Start assessment session</h2>
+    <div class="field"><label for="sp-name">Your name (SP / examiner)</label>
+      <input type="text" id="sp-name" placeholder="e.g. Tan Mei Ling"></div>
+    <div class="field"><label for="sp-case">Case</label>
+      <select id="sp-case"></select></div>
+    <div class="field"><label for="sp-session">Assessment session</label>
+      <input type="text" id="sp-session" placeholder="e.g. AY25 CA2 Run 1, Station 3"></div>
+    <div class="field"><label for="sp-group">Group number</label>
+      <input type="text" id="sp-group" placeholder="e.g. 14" inputmode="numeric"></div>
+    <div class="field"><label for="sp-pass">SP passcode</label>
+      <input type="password" id="sp-pass" onkeydown="if(event.key==='Enter')App.startSPSession()"></div>
+    <div class="row">
+      <button class="btn primary" onclick="App.startSPSession()">Start session</button>
+      <button class="btn ghost" onclick="App.show('s-role')">Back</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= ADMIN LOGIN ================= -->
+<div class="screen centred" id="s-admin-login">
+  <div class="form-box">
+    <h2>Admin login</h2>
+    <div class="field"><label for="admin-pass">Passcode</label>
+      <input type="password" id="admin-pass" onkeydown="if(event.key==='Enter')App.adminLogin()"></div>
+    <div class="row">
+      <button class="btn primary" onclick="App.adminLogin()">Log in</button>
+      <button class="btn ghost" onclick="App.show('s-role')">Back</button>
+    </div>
+    <p class="muted" style="margin-top:1rem;font-size:.82rem">Default passcode is <code>admin</code>. Change it under Settings after first login.</p>
+  </div>
+</div>
+
+<!-- ================= SP MAIN ================= -->
+<div class="screen" id="s-sp" data-fs="m">
+  <div class="sp-header">
+    <div class="spread">
+      <div class="meta">
+        <div><span class="label">Case</span><b id="h-case"></b></div>
+        <div><span class="label">Group</span><b id="h-group"></b></div>
+        <div><span class="label">Session</span><b id="h-session"></b></div>
+        <div><span class="label">SP / Examiner</span><b id="h-sp"></b></div>
+      </div>
+      <div class="row">
+        <div class="fontsize-ctl" role="group" aria-label="Font size">
+          <button data-fs="s" onclick="App.setFont('s')">S</button>
+          <button data-fs="m" onclick="App.setFont('m')" class="on">M</button>
+          <button data-fs="l" onclick="App.setFont('l')">L</button>
+          <button data-fs="xl" onclick="App.setFont('xl')">XL</button>
+        </div>
+        <button class="btn small" onclick="App.changeGroup()">Change group</button>
+        <button class="btn small ghost" onclick="App.endSPSession()">End session</button>
+      </div>
+    </div>
+  </div>
+  <div class="sp-body">
+    <div class="searchwrap">
+      <span class="icon">&#128269;</span>
+      <input type="search" id="sp-search" placeholder="Search test name or alias…" autocomplete="off"
+        oninput="App.onSearch(this.value)">
+    </div>
+    <div class="row" style="margin-bottom:.7rem" id="sp-nav">
+      <button class="btn small" id="sp-back" onclick="App.goBack()">← Back</button>
+      <button class="btn small" id="sp-home" onclick="App.goHome()">⌂ Home</button>
+      <span class="breadcrumb" id="sp-crumb" style="margin-bottom:0"></span>
+    </div>
+    <div id="sp-content"></div>
+  </div>
+</div>
+
+<!-- ================= RESULT OVERLAY ================= -->
+<div class="overlay" id="card-overlay" onclick="if(event.target===this)App.closeCard()">
+  <div class="result-card" id="result-card"></div>
+</div>
+
+<!-- ================= ADMIN ================= -->
+<div class="screen" id="s-admin">
+  <div class="admin-top">
+    <h1>Admin — PTY1015 CA2 Result Lookup</h1>
+    <div class="row">
+      <button class="btn small" onclick="App.adminLogout()">Log out</button>
+    </div>
+  </div>
+  <div class="tabs" id="admin-tabs">
+    <button data-tab="cases" class="on" onclick="App.adminTab('cases')">Cases</button>
+    <button data-tab="editor" onclick="App.adminTab('editor')">Structure &amp; test cards</button>
+    <button data-tab="logs" onclick="App.adminTab('logs')">Access log</button>
+    <button data-tab="io" onclick="App.adminTab('io')">Import / Export</button>
+    <button data-tab="settings" onclick="App.adminTab('settings')">Settings</button>
+  </div>
+  <div class="admin-body" id="admin-body"></div>
+</div>
+
+<!-- ================= CARD EDIT MODAL ================= -->
+<div class="modal" id="edit-modal" onclick="if(event.target===this)App.closeModal()">
+  <div class="modal-box" id="modal-box"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* =====================================================
+   PTY1015 CA2 Objective Result Lookup
+   Single-file app. Data persists in this browser's
+   localStorage. Use Import/Export to move data between
+   devices or to consolidate logs after an assessment.
+   ===================================================== */
+
+const DB_KEY = "PTY1015_LOOKUP_DB_V2";
+const SES_KEY = "PTY1015_LOOKUP_SESSION_V1";
+
+/* ---------------- utilities ---------------- */
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({
+  "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const uid = p => (p||"id") + "_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2,7);
+const nowISO = () => new Date().toISOString();
+const norm = s => String(s||"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim().replace(/\s+/g," ");
+function lev(a, b){
+  if (Math.abs(a.length - b.length) > 2) return 99;
+  const m = a.length, n = b.length;
+  const d = Array.from({length:m+1}, (_,i)=>[i, ...Array(n).fill(0)]);
+  for (let j=1;j<=n;j++) d[0][j]=j;
+  for (let i=1;i<=m;i++) for (let j=1;j<=n;j++){
+    d[i][j] = Math.min(d[i-1][j]+1, d[i][j-1]+1, d[i-1][j-1] + (a[i-1]===b[j-1]?0:1));
+    if (i>1 && j>1 && a[i-1]===b[j-2] && a[i-2]===b[j-1])
+      d[i][j] = Math.min(d[i][j], d[i-2][j-2]+1); // transposition
+  }
+  return d[m][n];
+}
+function toast(msg){
+  const t = $("toast"); t.textContent = msg; t.classList.add("show");
+  clearTimeout(t._h); t._h = setTimeout(()=>t.classList.remove("show"), 2200);
+}
+function download(filename, text, mime){
+  const blob = new Blob([text], {type: mime || "application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = filename;
+  document.body.appendChild(a); a.click();
+  setTimeout(()=>{URL.revokeObjectURL(a.href); a.remove();}, 400);
+}
+function csvCell(v){
+  v = String(v ?? "");
+  return /[",\n]/.test(v) ? '"' + v.replace(/"/g,'""') + '"' : v;
+}
+
+/* ---------------- data layer ---------------- */
+let DB = null;
+
+function loadDB(){
+  try {
+    const raw = localStorage.getItem(DB_KEY);
+    if (raw) {
+      DB = JSON.parse(raw);
+      if (!DB.settings.spPass) { DB.settings.spPass = "sp1015"; saveDB(); }
+      return;
+    }
+  } catch(e){ console.warn("DB load failed", e); }
+  DB = seedDB();
+  saveDB();
+}
+function saveDB(){ localStorage.setItem(DB_KEY, JSON.stringify(DB)); }
+
+function getCase(id){ return DB.cases.find(c => c.case_id === id); }
+function getCat(cs, id){ return (cs.categories||[]).find(c => c.category_id === id); }
+function getSub(cat, id){ return (cat.subcategories||[]).find(s => s.subcategory_id === id); }
+function catName(cs, id){ const c = getCat(cs,id); return c ? c.category_name : ""; }
+function subName(cs, catId, subId){
+  const c = getCat(cs,catId); if (!c) return "";
+  const s = getSub(c, subId); return s ? s.subcategory_name : "";
+}
+function audit(caseId, action, detail){
+  DB.audit.push({ audit_id: uid("aud"), case_id: caseId, actor: "admin",
+    action, detail: detail||"", timestamp: nowISO() });
+}
+
+/* ---------------- seed data ---------------- */
+function seedDB(){
+  const cats = [
+    ["observation","Observation",["Global posture","Local shoulder/scapular observation"]],
+    ["functional","Functional assessment",["Overhead tasks","Hand behind neck/back","Sport-specific task"]],
+    ["palpation","Palpation",["Rotator cuff/subacromial","Biceps/anterior shoulder","ACJ/SCJ","Posterior shoulder/scapular muscles"]],
+    ["rom","ROM",["AROM","PROM","Functional ROM"]],
+    ["mlt","MLT",["Cervicoscapular","Pectoral/anterior shoulder"]],
+    ["accessory","Accessory movements",["GHJ","ACJ","SCJ"]],
+    ["mmt","MMT",["Scapular muscles","Shoulder flexion/abduction/extension","Shoulder rotation","Pectoral/horizontal movements"]],
+    ["special","Special tests",["Rotator cuff-related shoulder pain","Rotator cuff integrity","Long head of biceps","Instability","SLAP/labral","ACJ","Symptom modification"]],
+    ["cervneuro","Cervical / neurological screen",["Cervical AROM","Dermatomes","Myotomes","Reflexes","Neurodynamic tests"]]
+  ].map(([id,name,subs],i)=>({
+    category_id:id, category_name:name, display_order:i+1, visible_status:true,
+    subcategories: subs.map((s,j)=>({
+      subcategory_id: id + "_" + norm(s).replace(/ /g,"_"),
+      subcategory_name: s, display_order: j+1, visible_status:true
+    }))
+  }));
+  const sub = (catId, frag) => {
+    const c = cats.find(c=>c.category_id===catId);
+    return c.subcategories.find(s=>s.subcategory_id.includes(frag)).subcategory_id;
+  };
+  // ss: side-specific card; ns: not side-specific card
+  let ord = 0;
+  const ss = (id,name,aliases,catId,subFrag,r,rpw,l,lpw,flag) => ({
+    test_card_id:id, test_name:name, aliases, category_id:catId,
+    subcategory_id:sub(catId,subFrag), is_side_specific:true,
+    results:{ right:{result_text:r, patient_wording:rpw||""},
+              left:{result_text:l, patient_wording:lpw||""} },
+    response_flag:flag||"", caution_note:"", display_order:++ord, active_status:true });
+  const ns = (id,name,aliases,catId,subFrag,res,pw,flag) => ({
+    test_card_id:id, test_name:name, aliases, category_id:catId,
+    subcategory_id:sub(catId,subFrag), is_side_specific:false,
+    results:{ single:{result_text:res, patient_wording:pw||""} },
+    response_flag:flag||"", caution_note:"", display_order:++ord, active_status:true });
+
+  const testCards = [
+    /* ---- Observation ---- */
+    ns("obs_posture","Global postural assessment",["Posture","Postural assessment","Standing observation"],
+      "observation","global",
+      "Mild forward head and rounded shoulder posture. No marked thoracic kyphosis or scoliosis."),
+    ns("obs_scap","Local shoulder/scapular observation",["Scapular observation","Scapular position","Resting scapula"],
+      "observation","local",
+      "Slight resting scapular protraction bilaterally, slightly more on the right. No winging at rest."),
+    ns("obs_humeral_head","Humeral head position",["Humeral head observation"],
+      "observation","local",
+      "Appears normal bilaterally. No visible sulcus or anterior humeral head positioning."),
+    ns("obs_bulk","Muscle bulk / swelling / bruising / ACJ step",["Swelling","Bruising","Muscle wasting","ACJ step"],
+      "observation","local",
+      "No swelling, bruising, ACJ step deformity or obvious cuff/deltoid wasting."),
+    ss("obs_shr","Scapulohumeral rhythm during elevation",["SHR","Scapulohumeral rhythm","Scapular rhythm"],
+      "observation","local",
+      "Mild early scapular elevation/shrug strategy and less smooth rhythm from approximately 80-120 degrees.",
+      "It feels a bit uncomfortable through the middle part, similar to what I get when I swing.",
+      "Smooth.",""),
+
+    /* ---- Functional assessment ---- */
+    ss("fn_overhead","Overhead reach to shelf",["Overhead reach","Overhead task","Shelf reach","Reaching overhead"],
+      "functional","overhead",
+      "Completes task but reports anterior/lateral shoulder pain 4/10 above head height, worse with a light load.",
+      "That is the familiar pain, mainly at the front and side of the shoulder.",
+      "Pain-free.","","Familiar pain reproduced"),
+    ss("fn_hbn","Hand behind neck",["HBN","Functional external rotation"],
+      "functional","hand_behind",
+      "Achieves position with mild anterior shoulder discomfort 2-3/10.",
+      "It is uncomfortable, but not as bad as the golf pain.",
+      "Full and pain-free.",""),
+    ss("fn_hbb","Hand behind back",["HBB","Functional internal rotation","Hand behind back reach"],
+      "functional","hand_behind",
+      "Reaches approximately T10 with anterior shoulder pinch 3-4/10.",
+      "That pinches at the front.",
+      "Reaches approximately T6, pain-free.",""),
+    ns("fn_golf","Simulated golf follow-through",["Golf swing","Golf follow-through","Sport-specific task"],
+      "functional","sport",
+      "Reproduces familiar anterior/lateral shoulder pain 4-5/10 near follow-through. No apprehension or sense of slipping.",
+      "Yes, that is close to the pain I get when I swing.","Familiar pain reproduced"),
+
+    /* ---- Palpation ---- */
+    ss("pal_gt","Greater tuberosity / subacromial region",["Greater tuberosity","Subacromial palpation","Cuff insertion palpation"],
+      "palpation","rotator_cuff",
+      "Mild to moderate tenderness, reproduces familiar lateral/anterior shoulder pain.",
+      "That is quite close to my usual pain.",
+      "Non-tender.","","Familiar tenderness"),
+    ss("pal_groove","Bicipital groove",["Biceps groove","Long head of biceps palpation","LHB palpation"],
+      "palpation","biceps",
+      "Local anterior tenderness 3/10, partly familiar but not the main golf pain.",
+      "That is tender at the front, but it is not exactly the same as when I swing.",
+      "Non-tender.",""),
+    ns("pal_acj","ACJ palpation",["AC joint palpation","Acromioclavicular palpation"],
+      "palpation","acj_scj",
+      "Mild local pressure awareness only. No focal familiar pain.",
+      "I can feel you pressing there, but that is not my usual pain."),
+    ns("pal_scj","SCJ palpation",["SC joint palpation","Sternoclavicular palpation"],
+      "palpation","acj_scj","No tenderness."),
+    ns("pal_ghj_line","Anterior/posterior GHJ joint line",["GHJ joint line","Joint line palpation"],
+      "palpation","biceps",
+      "Mild local pressure discomfort anteriorly only; no deep joint pain.",
+      "It feels like pressure, not the main pain."),
+    ns("pal_coracoid","Coracoid",["Coracoid process palpation"],
+      "palpation","biceps",
+      "Mild non-specific local tenderness, not familiar.",
+      "Tender, but not the same pain."),
+    ns("pal_post","Posterior cuff / scapular borders / upper trapezius",["Posterior cuff palpation","Upper trapezius palpation","Scapular border palpation"],
+      "palpation","posterior",
+      "Mild posterior cuff and upper trapezius tightness. Not symptom-reproducing.",
+      "That feels tight, but not the shoulder pain I came in for."),
+    ns("pal_hypersens","Hypersensitivity screen",["Allodynia screen","Sensitisation screen"],
+      "palpation","rotator_cuff",
+      "Normal. No allodynia or disproportionate pain response."),
+
+    /* ---- ROM: seated or standing ---- */
+    ss("arom_flex_up","Shoulder flexion AROM — seated/standing",["AROM flexion","Active flexion","Forward flexion"],
+      "rom","arom",
+      "165°, pain begins around 130°, familiar anterior/lateral shoulder pain 3–4/10 near end range. Mild shoulder shrug near end range.",
+      "When I lift it myself, it feels more like the pain I get during golf.",
+      "175°, pain-free.",""),
+    ss("prom_flex_up","Shoulder flexion PROM — seated/standing",["PROM flexion","Passive flexion"],
+      "rom","prom",
+      "170°, firm end-feel, mild end-range discomfort only. Less familiar than AROM. Not pain-limited.",
+      "When you move it, it’s only uncomfortable near the end.",
+      "Full, firm end-feel, pain-free.",""),
+    ss("arom_ext_up","Shoulder extension AROM — seated/standing",["AROM extension","Active extension"],
+      "rom","arom",
+      "Full range, mild anterior shoulder tightness only.",
+      "It just feels a bit tight at the front, but that’s not my main pain.",
+      "Full range, pain-free.",""),
+    ss("prom_ext_up","Shoulder extension PROM — seated/standing",["PROM extension","Passive extension"],
+      "rom","prom",
+      "Full range, firm end-feel, no familiar pain.","",
+      "Full range, firm end-feel, no familiar pain.",""),
+    ss("arom_abd_up","Shoulder abduction AROM — seated/standing",["AROM abduction","Active abduction"],
+      "rom","arom",
+      "155–160°. Painful arc from 80–120°, familiar anterior/lateral shoulder pain 4/10. Mild shoulder shrug after 120°.",
+      "That middle range when I lift it myself is the familiar pain.",
+      "175°, pain-free.","","Painful arc 80–120°"),
+    ss("prom_abd_up","Shoulder abduction PROM — seated/standing",["PROM abduction","Passive abduction"],
+      "rom","prom",
+      "165–170°, firm end-feel. Mild end-range discomfort only; pain is less familiar and less intense than AROM. Not pain-limited.",
+      "When you move it, it’s not as sharp.",
+      "Full, firm end-feel, pain-free.",""),
+    ss("arom_er_up","Shoulder external rotation AROM — seated, neutral",["AROM ER","Active external rotation","Lateral rotation AROM"],
+      "rom","arom",
+      "Near full range, mild lateral shoulder ache 2/10. Not clearly familiar.\nTaught position: Seated, shoulder neutral, elbow 90° flexion.",
+      "It’s a bit uncomfortable, but not really my main golf pain.",
+      "Full, pain-free.",""),
+    ss("prom_er_up","Shoulder external rotation PROM — seated, neutral",["PROM ER","Passive external rotation","Lateral rotation PROM"],
+      "rom","prom",
+      "Near full, firm end-feel, mild end-range discomfort only. Not familiar golf pain.\nTaught position: Seated, shoulder neutral, elbow 90° flexion.",
+      "","Full, pain-free.",""),
+    ss("arom_ir_up","Shoulder internal rotation AROM — seated, neutral",["AROM IR","Active internal rotation","Medial rotation AROM"],
+      "rom","arom",
+      "Near full range, mild anterior shoulder awareness only.\nTaught position: Seated, shoulder neutral, elbow 90° flexion.",
+      "I can feel it a little at the front, but it’s not the main pain.",
+      "Full, pain-free.",""),
+    ss("prom_ir_up","Shoulder internal rotation PROM — seated, neutral",["PROM IR","Passive internal rotation","Medial rotation PROM"],
+      "rom","prom",
+      "Near full, firm end-feel, mild anterior tightness only. Not familiar pain.\nTaught position: Seated, shoulder neutral, elbow 90° flexion.",
+      "","Full, pain-free.",""),
+
+    /* ---- ROM: formal taught method ---- */
+    ss("arom_flex_f","Shoulder flexion AROM — supine, formal taught method",["Supine flexion AROM","Formal flexion AROM"],
+      "rom","arom",
+      "165°, familiar anterior/lateral pain near end range.","",
+      "175°, pain-free.",""),
+    ss("prom_flex_f","Shoulder flexion PROM — supine, formal taught method",["Supine flexion PROM","Formal flexion PROM"],
+      "rom","prom",
+      "170°, firm end-feel. Mild end-range discomfort only; less familiar than AROM and not pain-limited.",
+      "When you move it for me, it’s only uncomfortable near the end.",
+      "Full, firm end-feel, pain-free.",""),
+    ss("arom_ext_f","Shoulder extension AROM — prone, formal taught method",["Prone extension AROM","Formal extension AROM"],
+      "rom","arom",
+      "Full range, mild anterior tightness only.",
+      "Just a bit of tightness at the front.",
+      "Full range, pain-free.",""),
+    ss("prom_ext_f","Shoulder extension PROM — prone, formal taught method",["Prone extension PROM","Formal extension PROM"],
+      "rom","prom",
+      "Full range, firm end-feel, no familiar pain.","",
+      "Full range, firm end-feel, no familiar pain.",""),
+    ss("arom_abd_f","Shoulder abduction AROM — supine, formal taught method",["Supine abduction AROM","Formal abduction AROM"],
+      "rom","arom",
+      "155–160°, familiar painful arc still present but slightly less obvious than upright.",
+      "It is worse when I lift it myself.",
+      "175°, pain-free.","","Painful arc present"),
+    ss("prom_abd_f","Shoulder abduction PROM — supine, formal taught method",["Supine abduction PROM","Formal abduction PROM"],
+      "rom","prom",
+      "165–170°, firm end-feel. Mild end-range discomfort only; pain less familiar and less intense than AROM. Not pain-limited.",
+      "When you move it, it’s not as sharp.",
+      "Full, firm end-feel, pain-free.",""),
+    ss("arom_er_f","Shoulder external rotation AROM — supine, 90° abduction",["Supine ER AROM","ER AROM in abduction","90/90 ER AROM"],
+      "rom","arom",
+      "75°, mild lateral shoulder ache 2/10. No apprehension.\nTaught position: Supine, shoulder 90° abduction, elbow 90° flexion, arm supported.",
+      "A bit uncomfortable at the end, but not the main pain unless I have to resist.",
+      "80°, pain-free.",""),
+    ss("prom_er_f","Shoulder external rotation PROM — supine, 90° abduction",["Supine ER PROM","ER PROM in abduction","90/90 ER PROM"],
+      "rom","prom",
+      "80°, firm end-feel. Mild end-range discomfort only, not the main golf pain. Not pain-limited.\nTaught position: Supine, shoulder 90° abduction, elbow 90° flexion, arm supported.",
+      "","Full, firm end-feel, pain-free.",""),
+    ss("arom_ir_f","Shoulder internal rotation AROM — supine, 90° abduction",["Supine IR AROM","IR AROM in abduction","90/90 IR AROM"],
+      "rom","arom",
+      "60–65°, mild anterior shoulder discomfort 2–3/10.\nTaught position: Supine, shoulder 90° abduction, elbow 90° flexion, arm supported.",
+      "It feels a bit tight at the front, but not exactly the same as the golf pain.",
+      "70°, pain-free.",""),
+    ss("prom_ir_f","Shoulder internal rotation PROM — supine, 90° abduction",["Supine IR PROM","IR PROM in abduction","90/90 IR PROM"],
+      "rom","prom",
+      "65–70°, firm end-feel with mild end-range stiffness. Local anterior tightness, not strongly familiar pain.\nTaught position: Supine, shoulder 90° abduction, elbow 90° flexion, arm supported.",
+      "","Full, firm end-feel, pain-free.",""),
+
+    /* ---- MLT ---- */
+    ns("mlt_ut","Upper trapezius MLT",["Upper trap length","UT length test"],
+      "mlt","cervicoscapular",
+      "Mild tightness bilaterally, slightly greater on right. Does not reproduce familiar shoulder pain.\nTaught position: Supine. Cervical flexion, contralateral lateral flexion, ipsilateral rotation, then ipsilateral shoulder depression.",
+      "I feel a neck/shoulder stretch, not the golf pain."),
+    ns("mlt_ls","Levator scapulae MLT",["Lev scap length","Levator scapulae length test"],
+      "mlt","cervicoscapular",
+      "Mild right-sided neck/scapular stretch. No familiar anterior/lateral shoulder pain.\nTaught position: Supine. Cervical flexion, contralateral lateral flexion, contralateral rotation, then ipsilateral shoulder depression.",
+      "That is more of a neck stretch."),
+    ns("mlt_pm","Pectoralis minor length",["Pec minor length","Pec minor MLT"],
+      "mlt","pectoral",
+      "Right posterior acromion sits slightly higher from plinth than left, consistent with mild pec minor shortness/rounded shoulder posture. No pain reproduction.\nTaught position: Supine relaxed posture. Measure posterior acromion distance from plinth.",
+      "No pain, just lying here."),
+
+    /* ---- Accessory movements ---- */
+    ss("acc_ghj_ap","GHJ AP glide",["AP glide","Anteroposterior glide","Posterior glide GHJ"],
+      "accessory","ghj",
+      "Mildly stiff, firm end-feel, no familiar pain.",
+      "Pressure only, not my usual pain.",
+      "Normal.",""),
+    ss("acc_ghj_pa","GHJ PA glide",["PA glide","Posteroanterior glide","Anterior glide GHJ"],
+      "accessory","ghj",
+      "Normal to mildly stiff, no familiar pain.",
+      "Just pressure.",
+      "Normal.",""),
+    ns("acc_ghj_caudad","GHJ longitudinal caudad glide",["Caudad glide","Longitudinal glide","Inferior glide GHJ"],
+      "accessory","ghj",
+      "Normal quantity, firm end-feel, no apprehension.",
+      "I feel the movement, but it does not feel like it is slipping."),
+    ns("acc_acj","ACJ accessory movement",["ACJ glide","AC joint accessory"],
+      "accessory","acj",
+      "Normal, no familiar pain.","Pressure only."),
+    ns("acc_scj","SCJ accessory movement",["SCJ glide","SC joint accessory"],
+      "accessory","scj",
+      "Normal, no familiar pain.","No pain."),
+
+    /* ---- MMT ---- */
+    ss("mmt_serratus","Serratus anterior MMT — scapular abduction/upward rotation",["Serratus anterior strength","Scapular protraction MMT"],
+      "mmt","scapular",
+      "4+/5, mild fatigue and slight scapular control deficit, no familiar pain.\nTaught position: Sitting, tested arm approximately 130 degrees shoulder flexion, elbow straight; resistance proximal to elbow.",
+      "It feels a bit effortful, not really the main pain.",
+      "5/5.",""),
+    ss("mmt_elevation","Scapular elevation MMT — upper trapezius/levator/rhomboids",["Shrug MMT","Scapular elevation strength"],
+      "mmt","scapular",
+      "5/5, symmetrical, no familiar pain.\nTaught position: Sitting, shrug shoulders; resistance downward over shoulders.",
+      "No pain.",
+      "5/5, symmetrical, no familiar pain.\nTaught position: Sitting, shrug shoulders; resistance downward over shoulders.",
+      "No pain."),
+    ss("mmt_midtrap","Middle trapezius MMT — scapular adduction",["Mid trap strength","Scapular adduction MMT"],
+      "mmt","scapular",
+      "4+/5, mild fatigue, no familiar anterior/lateral pain.\nTaught position: Prone, shoulder 90 degrees abduction, elbow 90 degrees flexion; resistance on distal humerus.",
+      "It just feels like effort.",
+      "5/5.",""),
+    ss("mmt_lowtrap","Lower trapezius MMT — scapular depression/adduction",["Lower trap strength","Lower trapezius strength"],
+      "mmt","scapular",
+      "4/5 with mild superior/posterior shoulder effort discomfort, not familiar golf pain.\nTaught position: Prone, arm overhead approximately 145 degrees abduction, thumb up; resistance on distal humerus.",
+      "This is hard, but not the same pain.",
+      "5/5.",""),
+    ss("mmt_rhomboids","Rhomboids MMT — scapular adduction/downward rotation",["Rhomboid strength"],
+      "mmt","scapular",
+      "4+/5, no familiar pain.\nTaught position: Prone, hand behind back; resistance downward/outward on distal humerus.",
+      "No real pain.",
+      "5/5.",""),
+    ss("mmt_flexion","Shoulder flexion MMT",["Flexion strength","Resisted flexion"],
+      "mmt","flexion",
+      "4+/5 with mild anterior shoulder discomfort 2-3/10.\nTaught position: Sitting, arm by side to 90 degrees flexion, elbow slightly flexed, forearm pronated; resistance distal humerus.",
+      "It is uncomfortable at the front, but not the worst one.",
+      "5/5.",""),
+    ss("mmt_abduction","Shoulder abduction MMT",["Abduction strength","Resisted abduction"],
+      "mmt","flexion",
+      "4/5, familiar anterior/lateral shoulder pain 4/10, pain-inhibited.\nTaught position: Sitting, arm by side to 90 degrees abduction, elbow slightly flexed, palm down; resistance distal humerus.",
+      "Yes, that is the familiar pain.",
+      "5/5.","","Familiar pain, pain-inhibited"),
+    ss("mmt_extension","Shoulder extension MMT",["Extension strength","Resisted extension"],
+      "mmt","flexion",
+      "5/5, mild anterior tightness only.\nTaught position: Prone, arm by side, shoulder internally rotated/palm up; resistance posterior humerus proximal to elbow.",
+      "Just tight at the front.",
+      "5/5.",""),
+    ss("mmt_horiz_abd","Shoulder horizontal abduction MMT",["Horizontal abduction strength"],
+      "mmt","pectoral",
+      "4+/5, mild posterior shoulder effort discomfort, not familiar.\nTaught position: Prone, shoulder 90 degrees abduction, elbow extended or flexed; resistance distal humerus.",
+      "Not the golf pain.",
+      "5/5.",""),
+    ss("mmt_pec_clav","Shoulder horizontal adduction MMT — pectoralis major clavicular head",["Pec major clavicular","Horizontal adduction clavicular"],
+      "mmt","pectoral",
+      "5/5, mild anterior pressure only.\nTaught position: Supine, shoulder approx 60 degrees abduction; diagonal resistance outward/downward as appropriate.",
+      "I feel some pressure at the front, but not the main pain.",
+      "5/5.",""),
+    ss("mmt_pec_sternal","Shoulder horizontal adduction MMT — pectoralis major sternal head",["Pec major sternal","Horizontal adduction sternal"],
+      "mmt","pectoral",
+      "5/5, mild anterior stretch/pressure only.\nTaught position: Supine, shoulder approx 120 degrees abduction; diagonal resistance outward/upward as appropriate.",
+      "Not my usual pain.",
+      "5/5.",""),
+    ss("mmt_er_neutral","Shoulder external rotation MMT — neutral position",["ER strength neutral","Resisted ER neutral","ER MMT"],
+      "mmt","rotation",
+      "4+/5, familiar lateral shoulder pain 3/10, less provocative than abduction-position ER.\nTaught position: Sitting, shoulder neutral/arm by side, elbow 90 degrees flexion; resist ER.",
+      "That is a bit like the golf pain, but milder.",
+      "5/5.","","Familiar pain reproduced"),
+    ss("mmt_ir_neutral","Shoulder internal rotation MMT — neutral position",["IR strength neutral","Resisted IR neutral","IR MMT"],
+      "mmt","rotation",
+      "5/5, mild anterior discomfort only.\nTaught position: Sitting, shoulder neutral/arm by side, elbow 90 degrees flexion; resist IR.",
+      "A little uncomfortable in front, but not the main one.",
+      "5/5.",""),
+    ss("mmt_er_abd","Shoulder external rotation MMT — shoulder in abduction",["ER strength in abduction","Resisted ER 90/90"],
+      "mmt","rotation",
+      "4/5, familiar anterior/lateral pain 4/10 and pain-inhibited.\nTaught position: Prone, shoulder 90 degrees abduction, elbow 90 degrees flexion, arm supported on towel; resist ER.",
+      "Yes, this feels closer to the pain I get when I swing.",
+      "5/5.","","Familiar pain, pain-inhibited"),
+    ss("mmt_ir_abd","Shoulder internal rotation MMT — shoulder in abduction",["IR strength in abduction","Resisted IR 90/90"],
+      "mmt","rotation",
+      "5/5, mild anterior discomfort 2/10 only.\nTaught position: Prone, shoulder 90 degrees abduction, elbow 90 degrees flexion, arm supported on towel; resist IR.",
+      "A bit uncomfortable, but not the same pain.",
+      "5/5.",""),
+
+    /* ---- Special tests ---- */
+    ss("sp_hk","Hawkins-Kennedy",["Hawkins","HK test"],
+      "special","rotator_cuff_related",
+      "Positive: familiar anterior/lateral shoulder pain 3-4/10.",
+      "That is the familiar pinchy pain.",
+      "Negative.","","Familiar pain reproduced"),
+    ss("sp_neer","Neer's / modified active Neer's",["Neers","Neer test","Modified Neer"],
+      "special","rotator_cuff_related",
+      "Positive near end-range elevation; familiar pain, less provocative than resisted abduction/ER.",
+      "That catches the same area near the top.",
+      "Negative.","","Familiar pain reproduced"),
+    ss("sp_arc","Painful arc",["Arc test","Abduction arc"],
+      "special","rotator_cuff_related",
+      "Positive 80-120 degrees abduction; pain reduces slightly above arc.",
+      "Yes, that middle range is the familiar pain.",
+      "Negative.","","Painful arc 80–120°"),
+    ss("sp_jobe","Empty can / Jobe",["Jobe","Jobe's test","Empty can","Supraspinatus test"],
+      "special","rotator_cuff_related",
+      "Positive: familiar pain 4/10 with mild pain-inhibited weakness; no drop.",
+      "Yes, that is very similar to the pain I get.",
+      "Negative.","","Familiar pain reproduced"),
+    ss("sp_er_resist","External rotation resistance",["ER resistance","Resisted ER test","Infraspinatus test"],
+      "special","rotator_cuff_related",
+      "Positive: familiar lateral/anterior shoulder pain, mild pain-inhibited weakness.",
+      "That feels like the golf pain.",
+      "Negative.","","Familiar pain reproduced"),
+    ns("sp_belly","Belly press",["Belly press test","Napoleon test"],
+      "special","integrity",
+      "Negative. No weakness; mild anterior awareness only.",
+      "A little pressure, but not my usual pain."),
+    ns("sp_er_lag","External rotation lag sign",["ER lag","ERLS","Lag sign"],
+      "special","integrity",
+      "Negative. Able to hold position; no lag.",
+      "No pain, just effort."),
+    ns("sp_liftoff","Lift-off test",["Gerber's lift-off","Lift off","Subscapularis lift-off"],
+      "special","integrity",
+      "Negative for subscapularis weakness. Mild anterior discomfort only.",
+      "A little uncomfortable, but not the main pain."),
+    ns("sp_bearhug","Bear hug test",["Bear hug"],
+      "special","integrity",
+      "Negative. No clear weakness or familiar pain.",
+      "No, not the same pain."),
+    ns("sp_speeds","Speed's test",["Speeds","Speed test","Biceps resistance test"],
+      "special","biceps",
+      "Mild to moderate anterior shoulder discomfort 3-4/10. Partly familiar, but less similar and less intense than cuff-loading tests.",
+      "That is uncomfortable at the front, but not quite the main pain I get when I swing."),
+    ns("sp_yergason","Yergason's test",["Yergasons","Supination resistance test"],
+      "special","biceps",
+      "Mild local anterior discomfort 2/10. No snapping. Does not clearly reproduce familiar golf pain.",
+      "Tender at the front, but not the same."),
+    ns("sp_apprehension","Apprehension / relocation",["Apprehension test","Relocation test","Crank apprehension"],
+      "special","instability",
+      "Mild anterior stretch discomfort at end-range abduction/ER but no apprehension, guarding or sense of slipping. Relocation produces no meaningful change.",
+      "It stretches a bit, but I do not feel like it will come out."),
+    ns("sp_loadshift","Load and shift",["Load shift test"],
+      "special","instability",
+      "Normal physiological translation bilaterally with firm end-feel. No apprehension.",
+      "I can feel movement, but it does not feel unstable."),
+    ns("sp_postdrawer","Posterior drawer",["Posterior drawer test"],
+      "special","instability",
+      "Normal posterior translation, firm end-feel, no apprehension or familiar pain.",
+      "Just pressure."),
+    ns("sp_sulcus","Sulcus sign",["Sulcus test"],
+      "special","instability",
+      "Negative bilaterally. Mild traction sensation only.",
+      "I feel the pull, but no pain."),
+    ns("sp_obrien","O'Brien's active compression",["O'Briens","OBrien test","Active compression test"],
+      "special","slap",
+      "Thumb-down produces anterior discomfort 3/10. Palm-up slightly easier but not clearly abolished. No deep joint pain, catching, clunking or instability.",
+      "It is uncomfortable at the front, but I do not feel anything deep or catching."),
+    ns("sp_bicepsload","Biceps Load II",["Biceps load 2","Biceps load test"],
+      "special","slap",
+      "Mild anterior shoulder discomfort 2-3/10 only. No deep pain, click, catch or familiar golf pain.",
+      "A bit uncomfortable, but not the main pain."),
+    ns("sp_scarf","Scarf / cross-body adduction",["Scarf test","Cross body adduction","Horizontal adduction test"],
+      "special","acj",
+      "Posterior shoulder stretch and mild superior shoulder pressure 2/10. No focal ACJ pain and no familiar anterior/lateral shoulder pain.",
+      "I feel a stretch and pressure, but that is not my usual pain."),
+    ns("sp_ssm_thoracic","Shoulder symptom modification — thoracic extension",["Thoracic extension SMP","SSMP thoracic"],
+      "special","symptom",
+      "Minimal change to symptoms during elevation.",
+      "Maybe slightly easier, but not a big difference."),
+    ns("sp_ssm_scap","Shoulder symptom modification — scapular assistance/reposition",["Scap assist","Scapular assistance test","SAT","Scapular reposition"],
+      "special","symptom",
+      "Slight reduction of painful arc intensity from 4/10 to around 2-3/10 with scapular assistance/reposition.",
+      "That feels a little easier, but I can still feel it.","Symptom modification positive"),
+
+    /* ---- Cervical / neurological screen ---- */
+    ns("cn_arom","Cervical AROM",["Neck AROM","Cervical screen","Cervical clearing"],
+      "cervneuro","cervical_arom",
+      "Full range. Mild general neck tightness only; no reproduction of shoulder pain.",
+      "My neck is a little tight, but it is not the shoulder pain."),
+    ns("cn_dermatomes","Dermatomes",["Sensation testing","Light touch testing"],
+      "cervneuro","dermatomes",
+      "Grossly normal bilaterally."),
+    ns("cn_myotomes","Myotomes",["Myotome testing"],
+      "cervneuro","myotomes",
+      "Grossly normal bilaterally outside pain-limited shoulder tests."),
+    ns("cn_reflexes","Reflexes",["DTR","Deep tendon reflexes","Biceps reflex","Triceps reflex"],
+      "cervneuro","reflexes",
+      "Biceps, brachioradialis and triceps reflexes present and symmetrical."),
+    ns("cn_ulnt","Upper limb neurodynamic tests",["ULNT","ULTT","Neurodynamic tests","Median nerve test"],
+      "cervneuro","neurodynamic",
+      "Mild stretch sensation only, no reproduction of familiar shoulder pain or distal symptoms.",
+      "I feel a stretch, not pins and needles and not my usual pain.")
+  ];
+  return {
+    version: 2,
+    settings: { adminPass: "PTY1015MSK1", spPass: "PHYSIO2026" },
+    cases: [{
+      case_id: "pty1015_ca2_shoulder_alice_johnson",
+      case_name: "PTY1015 Alice Johnson Shoulder Case",
+      description: "Student release cards — taught tests only. Use these cards when students perform or explicitly request a test. The model/SP does not need to act. Read the result and the patient wording where relevant. Mild discomfort on some non-primary tests reflects local tissue sensitisation; it should not be treated as equivalent to reproduction of the familiar golf-related pain. Student-facing interpretation prompt (after findings recorded): decide whether each response reproduces the patient's familiar pain, creates local/non-specific discomfort, or is negative. Prioritise findings that reproduce the familiar golf-related anterior/lateral shoulder pain under elevation and cuff-loading demands.",
+      assessment_name: "PTY1015 CA2 Practical",
+      created_by: "admin", created_at: nowISO(), updated_at: nowISO(),
+      locked_status: false,
+      categories: cats,
+      test_cards: testCards
+    }],
+    logs: [],
+    audit: []
+  };
+}
+
+/* ---------------- app controller ---------------- */
+const App = {
+  session: null,        // {sp, caseId, sessionName, group}
+  adminAuthed: false,
+  browse: { cat: null, sub: null },
+  searchQ: "",
+  currentTab: "cases",
+  editorCaseId: null,
+
+  init(){
+    loadDB();
+    const ses = sessionStorage.getItem(SES_KEY);
+    if (ses) {
+      try {
+        this.session = JSON.parse(ses);
+        if (getCase(this.session.caseId)) { this.enterSP(); return; }
+      } catch(e){}
+      this.session = null;
+    }
+    this.show("s-role");
+  },
+
+  show(id){
+    document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+    $(id).classList.add("active");
+    window.scrollTo(0,0);
+  },
+
+  /* ============ SP session ============ */
+  gotoSPSetup(){
+    const sel = $("sp-case");
+    sel.innerHTML = DB.cases.map(c =>
+      `<option value="${esc(c.case_id)}">${esc(c.case_name)}${c.locked_status?" (locked)":""}</option>`).join("");
+    this.show("s-sp-setup");
+  },
+
+  startSPSession(){
+    const sp = $("sp-name").value.trim();
+    const caseId = $("sp-case").value;
+    const sessionName = $("sp-session").value.trim();
+    const group = $("sp-group").value.trim();
+    if (!sp || !caseId || !sessionName || !group){ toast("Fill in all fields to start."); return; }
+    if ($("sp-pass").value !== DB.settings.spPass){ toast("Incorrect SP passcode."); return; }
+    $("sp-pass").value = "";
+    this.session = { sp, caseId, sessionName, group };
+    sessionStorage.setItem(SES_KEY, JSON.stringify(this.session));
+    this.enterSP();
+  },
+
+  enterSP(){
+    const cs = getCase(this.session.caseId);
+    $("h-case").textContent = cs.case_name;
+    $("h-group").textContent = this.session.group;
+    $("h-session").textContent = this.session.sessionName;
+    $("h-sp").textContent = this.session.sp;
+    const fs = sessionStorage.getItem("PTY1015_FS") || "m";
+    this.setFont(fs, true);
+    this.browse = { cat:null, sub:null };
+    this.searchQ = "";
+    $("sp-search").value = "";
+    this.show("s-sp");
+    this.renderSP();
+  },
+
+  changeGroup(){
+    const g = prompt("Enter new group number:", this.session.group);
+    if (g === null) return;
+    const gv = g.trim();
+    if (!gv){ toast("Group number cannot be blank."); return; }
+    this.session.group = gv;
+    sessionStorage.setItem(SES_KEY, JSON.stringify(this.session));
+    $("h-group").textContent = gv;
+    toast("Now logging access for group " + gv);
+  },
+
+  endSPSession(){
+    if (!confirm("End this session? Access logs are kept.")) return;
+    this.session = null;
+    sessionStorage.removeItem(SES_KEY);
+    this.show("s-role");
+  },
+
+  setFont(fs, silent){
+    $("s-sp").setAttribute("data-fs", fs);
+    sessionStorage.setItem("PTY1015_FS", fs);
+    document.querySelectorAll(".fontsize-ctl button").forEach(b =>
+      b.classList.toggle("on", b.dataset.fs === fs));
+    if (!silent) toast("Font size: " + fs.toUpperCase());
+  },
+
+  /* ============ SP search & browse ============ */
+  onSearch(q){
+    this.searchQ = q;
+    this.renderSP();
+  },
+
+  renderSP(){
+    const cs = getCase(this.session.caseId);
+    const content = $("sp-content");
+    const crumb = $("sp-crumb");
+    const q = this.searchQ.trim();
+    this.updateNavButtons();
+
+    if (q){
+      crumb.innerHTML = `Search results for “${esc(q)}” &nbsp;·&nbsp; <a onclick="App.clearSearch()">clear</a>`;
+      const hits = this.searchCards(cs, q);
+      content.innerHTML = hits.length
+        ? hits.map(c => this.previewHTML(cs, c, "search")).join("")
+        : `<div class="empty-note">No matching test found. Try a shorter fragment of the name, or browse by category below.<br><br>
+           <button class="btn" onclick="App.clearSearch()">Browse categories</button></div>`;
+      return;
+    }
+
+    const b = this.browse;
+    if (!b.cat){
+      crumb.textContent = "Browse by category";
+      const cats = (cs.categories||[]).filter(c=>c.visible_status!==false)
+        .slice().sort((a,b)=>a.display_order-b.display_order);
+      content.innerHTML = `<div class="tile-grid">` + cats.map(c=>{
+        const n = cs.test_cards.filter(t=>t.category_id===c.category_id && t.active_status!==false).length;
+        return `<button class="tile" onclick="App.openCat('${esc(c.category_id)}')">${esc(c.category_name)}
+          <span class="count">${n} test${n===1?"":"s"}</span></button>`;
+      }).join("") + `</div>`;
+      return;
+    }
+
+    const cat = getCat(cs, b.cat);
+    if (!b.sub){
+      crumb.innerHTML = `<a onclick="App.openHome()">All categories</a> › ${esc(cat.category_name)}`;
+      const subs = (cat.subcategories||[]).filter(s=>s.visible_status!==false)
+        .slice().sort((a,b)=>a.display_order-b.display_order);
+      content.innerHTML = `<div class="tile-grid">` + subs.map(s=>{
+        const n = cs.test_cards.filter(t=>t.subcategory_id===s.subcategory_id && t.active_status!==false).length;
+        return `<button class="tile" onclick="App.openSub('${esc(s.subcategory_id)}')">${esc(s.subcategory_name)}
+          <span class="count">${n} test${n===1?"":"s"}</span></button>`;
+      }).join("") + `</div>`;
+      return;
+    }
+
+    crumb.innerHTML = `<a onclick="App.openHome()">All categories</a> ›
+      <a onclick="App.openCat('${esc(cat.category_id)}')">${esc(cat.category_name)}</a> ›
+      ${esc(subName(cs, b.cat, b.sub))}`;
+    const cards = cs.test_cards
+      .filter(t=>t.subcategory_id===b.sub && t.active_status!==false)
+      .slice().sort((a,b)=>(a.display_order||0)-(b.display_order||0));
+    content.innerHTML = cards.length
+      ? cards.map(c=>this.previewHTML(cs, c, "browse")).join("")
+      : `<div class="empty-note">No tests in this subcategory.</div>`;
+  },
+
+  clearSearch(){ this.searchQ=""; $("sp-search").value=""; this.renderSP(); },
+  openHome(){ this.browse={cat:null,sub:null}; this.renderSP(); },
+  openCat(id){ this.browse={cat:id,sub:null}; this.renderSP(); },
+  openSub(id){ this.browse.sub=id; this.renderSP(); },
+
+  goBack(){
+    if (this.searchQ.trim()) { this.clearSearch(); return; }
+    if (this.browse.sub) { this.browse.sub = null; }
+    else if (this.browse.cat) { this.browse.cat = null; }
+    this.renderSP();
+  },
+  goHome(){
+    this.searchQ = ""; $("sp-search").value = "";
+    this.browse = { cat:null, sub:null };
+    this.renderSP();
+  },
+  updateNavButtons(){
+    const atHome = !this.searchQ.trim() && !this.browse.cat;
+    $("sp-back").disabled = atHome;
+    $("sp-home").disabled = atHome;
+  },
+
+  previewHTML(cs, card, source){
+    return `<div class="preview">
+      <div>
+        <div class="pname">${esc(card.test_name)}</div>
+        <div class="pmeta">${esc(catName(cs,card.category_id))} › ${esc(subName(cs,card.category_id,card.subcategory_id))}
+          ${card.response_flag ? ` &nbsp;<span class="tag">${esc(card.response_flag)}</span>` : ""}</div>
+        ${card.aliases && card.aliases.length ? `<div class="paliases">Also: ${esc(card.aliases.join(", "))}</div>` : ""}
+      </div>
+      <button class="btn primary" onclick="App.openCard('${esc(card.test_card_id)}','${source}')">Open result</button>
+    </div>`;
+  },
+
+  searchCards(cs, q){
+    const qn = norm(q);
+    if (!qn) return [];
+    const qTokens = qn.split(" ");
+    const scored = [];
+    for (const card of cs.test_cards){
+      if (card.active_status === false) continue;
+      const names = [card.test_name, ...(card.aliases||[])].map(norm).filter(Boolean);
+      let best = 0;
+      for (const n of names){
+        if (n === qn) { best = Math.max(best, 100); continue; }
+        const initials = n.split(" ").map(w=>w[0]).join("");
+        if (initials === qn.replace(/ /g,"")) { best = Math.max(best, 85); }
+        if (n.startsWith(qn)) best = Math.max(best, 90);
+        else if (n.includes(qn)) best = Math.max(best, 80);
+        const nTokens = n.split(" ");
+        const allExact = qTokens.every(qt => nTokens.some(nt => nt===qt || nt.startsWith(qt)));
+        if (allExact) best = Math.max(best, 70);
+        else {
+          const allFuzzy = qTokens.every(qt =>
+            nTokens.some(nt => nt===qt || nt.startsWith(qt) ||
+              (qt.length>=5 && lev(qt,nt)<=2) ||
+              (qt.length>=3 && lev(qt,nt)<=1)));
+          if (allFuzzy) best = Math.max(best, 50);
+        }
+      }
+      if (best > 0) scored.push([best, card]);
+    }
+    scored.sort((a,b)=> b[0]-a[0] || (a[1].display_order||0)-(b[1].display_order||0));
+    return scored.map(s=>s[1]);
+  },
+
+  /* ============ result card & release logging ============ */
+  openCardCtx: null, // {cardId, source}
+
+  openCard(cardId, source){
+    this.openCardCtx = { cardId, source };
+    const cs = getCase(this.session.caseId);
+    const card = cs.test_cards.find(t=>t.test_card_id===cardId);
+    if (!card) return;
+    const box = $("result-card");
+    let inner = `
+      <button class="btn small closer" onclick="App.closeCard()">Close ✕</button>
+      <h2>${esc(card.test_name)}</h2>
+      <div class="rc-meta">${esc(catName(cs,card.category_id))} › ${esc(subName(cs,card.category_id,card.subcategory_id))}
+        ${card.response_flag ? ` &nbsp;<span class="tag">${esc(card.response_flag)}</span>` : ""}</div>`;
+    if (card.is_side_specific){
+      inner += `
+      <p class="muted">Show only the side(s) the student actually tested.</p>
+      <div class="sidesel" id="sidesel">
+        <button onclick="App.showSide('right')">Right</button>
+        <button onclick="App.showSide('left')">Left</button>
+        <button onclick="App.showSide('both')">Both sides</button>
+      </div>
+      <div id="side-results"></div>`;
+    } else {
+      inner += `<div id="side-results"></div>`;
+    }
+    box.innerHTML = inner;
+    $("card-overlay").classList.add("open");
+    if (!card.is_side_specific){
+      this.renderResults(card, "not_side_specific");
+      this.logRelease(cs, card, "not_side_specific", source);
+    }
+  },
+
+  showSide(side){
+    const cs = getCase(this.session.caseId);
+    const card = cs.test_cards.find(t=>t.test_card_id===this.openCardCtx.cardId);
+    document.querySelectorAll("#sidesel button").forEach(b=>
+      b.classList.toggle("on", b.textContent.toLowerCase().startsWith(side==="both"?"both":side)));
+    this.renderResults(card, side);
+    this.logRelease(cs, card, side, this.openCardCtx.source);
+  },
+
+  resultBlock(label, r){
+    if (!r || !r.result_text) return `<div class="result-block">
+      <div class="side-lab">${esc(label)}</div>
+      <div class="rtext muted">No approved result recorded for this side.</div></div>`;
+    return `<div class="result-block">
+      ${label ? `<div class="side-lab">${esc(label)}</div>` : ""}
+      <div class="rtext">${esc(r.result_text)}</div>
+      ${r.patient_wording ? `<div class="pwording">“${esc(r.patient_wording)}”</div>` : ""}
+    </div>`;
+  },
+
+  renderResults(card, side){
+    const wrap = $("side-results");
+    const R = card.results || {};
+    let html = "";
+    if (side === "right") html = this.resultBlock("Right", R.right);
+    else if (side === "left") html = this.resultBlock("Left", R.left);
+    else if (side === "both"){
+      if (R.bilateral && R.bilateral.result_text) html = this.resultBlock("Both sides", R.bilateral);
+      else html = this.resultBlock("Right", R.right) + this.resultBlock("Left", R.left);
+    } else {
+      html = this.resultBlock("", R.single || R.not_side_specific);
+    }
+    if (card.caution_note)
+      html += `<div class="caution-block"><b>Caution</b> — ${esc(card.caution_note)}</div>`;
+    html += `<div class="logged-note">✓ Logged as released to group ${esc(this.session.group)}.</div>`;
+    wrap.innerHTML = html;
+  },
+
+  closeCard(){
+    $("card-overlay").classList.remove("open");
+    this.openCardCtx = null;
+  },
+
+  logRelease(cs, card, side, source){
+    const s = this.session;
+    const prior = DB.logs.some(l =>
+      l.case_id===cs.case_id && l.assessment_session===s.sessionName &&
+      l.group_number===s.group && l.test_card_id===card.test_card_id && l.side_viewed===side);
+    const R = card.results || {};
+    let pw = false;
+    if (side==="right") pw = !!(R.right && R.right.patient_wording);
+    else if (side==="left") pw = !!(R.left && R.left.patient_wording);
+    else if (side==="both") pw = !!((R.right&&R.right.patient_wording)||(R.left&&R.left.patient_wording)||(R.bilateral&&R.bilateral.patient_wording));
+    else pw = !!((R.single&&R.single.patient_wording)||(R.not_side_specific&&R.not_side_specific.patient_wording));
+    DB.logs.push({
+      log_id: uid("log"),
+      case_id: cs.case_id,
+      case_name: cs.case_name,
+      assessment_session: s.sessionName,
+      group_number: s.group,
+      sp_examiner_user: s.sp,
+      test_card_id: card.test_card_id,
+      test_name: card.test_name,
+      category_id: card.category_id,
+      category_name: catName(cs, card.category_id),
+      subcategory_id: card.subcategory_id,
+      subcategory_name: subName(cs, card.category_id, card.subcategory_id),
+      side_viewed: side,
+      result_viewed: true,
+      patient_wording_viewed: pw,
+      accessed_from: source,
+      repeat_view: prior,
+      timestamp: nowISO()
+    });
+    saveDB();
+  },
+
+  /* ============ admin: auth & tabs ============ */
+  gotoAdminLogin(){ $("admin-pass").value=""; this.show("s-admin-login"); },
+
+  adminLogin(){
+    if ($("admin-pass").value !== DB.settings.adminPass){ toast("Incorrect passcode."); return; }
+    this.adminAuthed = true;
+    this.show("s-admin");
+    this.adminTab("cases");
+  },
+  adminLogout(){ this.adminAuthed=false; this.show("s-role"); },
+
+  adminTab(tab){
+    this.currentTab = tab;
+    document.querySelectorAll("#admin-tabs button").forEach(b=>
+      b.classList.toggle("on", b.dataset.tab===tab));
+    const render = { cases:this.renderCases, editor:this.renderEditor,
+      logs:this.renderLogs, io:this.renderIO, settings:this.renderSettings };
+    render[tab].call(this);
+  },
+
+  /* ============ admin: cases ============ */
+  renderCases(){
+    const body = $("admin-body");
+    body.innerHTML = `
+      <div class="spread" style="margin-bottom:1rem">
+        <h2 style="font-size:1.1rem">Cases</h2>
+        <button class="btn primary" onclick="App.newCase()">+ New case</button>
+      </div>
+      ${DB.cases.map(c=>{
+        const nCards = c.test_cards.length;
+        return `<div class="list-item">
+          <div>
+            <div class="li-name">${esc(c.case_name)}
+              ${c.locked_status ? '<span class="tag warn">Locked</span>' : '<span class="tag grey">Unlocked</span>'}</div>
+            <div class="muted" style="font-size:.85rem">${esc(c.description||"")} · ${nCards} test cards · updated ${new Date(c.updated_at).toLocaleString()}</div>
+          </div>
+          <div class="row">
+            <button class="btn small" onclick="App.editCase('${esc(c.case_id)}')">Edit details</button>
+            <button class="btn small" onclick="App.openEditorFor('${esc(c.case_id)}')">Structure &amp; cards</button>
+            <button class="btn small" onclick="App.toggleLock('${esc(c.case_id)}')">${c.locked_status?"Unlock":"Lock"}</button>
+            <button class="btn small" onclick="App.duplicateCase('${esc(c.case_id)}')">Duplicate</button>
+            <button class="btn small danger" onclick="App.deleteCase('${esc(c.case_id)}')">Delete</button>
+          </div>
+        </div>`;
+      }).join("") || `<p class="muted">No cases yet.</p>`}
+      <div class="panel-h">Lock / unlock history</div>
+      ${this.auditTable()}`;
+  },
+
+  auditTable(){
+    const rows = DB.audit.slice().reverse().slice(0,40);
+    if (!rows.length) return `<p class="muted">No audit entries yet.</p>`;
+    return `<table class="data"><thead><tr><th>When</th><th>Case</th><th>Action</th><th>Detail</th></tr></thead><tbody>
+      ${rows.map(a=>`<tr><td>${new Date(a.timestamp).toLocaleString()}</td>
+        <td>${esc((getCase(a.case_id)||{}).case_name || a.case_id)}</td>
+        <td>${esc(a.action)}</td><td>${esc(a.detail)}</td></tr>`).join("")}
+      </tbody></table>`;
+  },
+
+  newCase(){
+    this.caseForm(null);
+  },
+  editCase(id){
+    this.caseForm(getCase(id));
+  },
+  caseForm(cs){
+    const isNew = !cs;
+    $("modal-box").innerHTML = `
+      <h3>${isNew?"New case":"Edit case details"}</h3>
+      <div class="field"><label>Case name</label><input type="text" id="cf-name" value="${esc(cs?cs.case_name:"")}"></div>
+      <div class="field"><label>Description</label><input type="text" id="cf-desc" value="${esc(cs?cs.description:"")}"></div>
+      <div class="field"><label>Assessment name</label><input type="text" id="cf-assess" value="${esc(cs?cs.assessment_name:"PTY1015 CA2 Practical")}"></div>
+      <div class="row">
+        <button class="btn primary" onclick="App.saveCase(${isNew?"null":"'"+esc(cs.case_id)+"'"})">Save</button>
+        <button class="btn ghost" onclick="App.closeModal()">Cancel</button>
+      </div>`;
+    $("edit-modal").classList.add("open");
+  },
+  saveCase(id){
+    const name = $("cf-name").value.trim();
+    if (!name){ toast("Case name is required."); return; }
+    if (id){
+      const cs = getCase(id);
+      if (cs.locked_status){ toast("Case is locked. Unlock first."); return; }
+      cs.case_name = name; cs.description = $("cf-desc").value.trim();
+      cs.assessment_name = $("cf-assess").value.trim(); cs.updated_at = nowISO();
+      audit(id, "case_edited", "Case details updated");
+    } else {
+      const cid = "case_" + norm(name).replace(/ /g,"_").slice(0,40) + "_" + Date.now().toString(36);
+      DB.cases.push({ case_id:cid, case_name:name, description:$("cf-desc").value.trim(),
+        assessment_name:$("cf-assess").value.trim(), created_by:"admin",
+        created_at:nowISO(), updated_at:nowISO(), locked_status:false,
+        categories:[], test_cards:[] });
+      audit(cid, "case_created", name);
+    }
+    saveDB(); this.closeModal(); this.renderCases(); toast("Saved.");
+  },
+  toggleLock(id){
+    const cs = getCase(id);
+    if (cs.locked_status){
+      const why = prompt("Unlocking allows edits during/after setup. Who is unlocking, and why?");
+      if (why === null) return;
+      cs.locked_status = false;
+      audit(id, "case_unlocked", why || "(no reason given)");
+    } else {
+      cs.locked_status = true;
+      audit(id, "case_locked", "Locked for assessment");
+    }
+    cs.updated_at = nowISO(); saveDB(); this.renderCases();
+  },
+  duplicateCase(id){
+    const cs = getCase(id);
+    const copy = JSON.parse(JSON.stringify(cs));
+    copy.case_id = cs.case_id + "_copy_" + Date.now().toString(36);
+    copy.case_name = cs.case_name + " (copy)";
+    copy.locked_status = false;
+    copy.created_at = nowISO(); copy.updated_at = nowISO();
+    DB.cases.push(copy);
+    audit(copy.case_id, "case_duplicated", "From " + cs.case_name);
+    saveDB(); this.renderCases(); toast("Case duplicated.");
+  },
+  deleteCase(id){
+    const cs = getCase(id);
+    if (cs.locked_status){ toast("Case is locked. Unlock first."); return; }
+    if (!confirm(`Delete "${cs.case_name}" and all its test cards? Access logs are kept.`)) return;
+    DB.cases = DB.cases.filter(c=>c.case_id!==id);
+    audit(id, "case_deleted", cs.case_name);
+    saveDB(); this.renderCases();
+  },
+
+  /* ============ admin: structure & cards editor ============ */
+  openEditorFor(id){ this.editorCaseId = id; this.adminTab("editor"); },
+
+  renderEditor(){
+    const body = $("admin-body");
+    if (!DB.cases.length){ body.innerHTML = `<p class="muted">Create a case first.</p>`; return; }
+    if (!this.editorCaseId || !getCase(this.editorCaseId)) this.editorCaseId = DB.cases[0].case_id;
+    const cs = getCase(this.editorCaseId);
+    const locked = cs.locked_status;
+    body.innerHTML = `
+      <div class="spread" style="margin-bottom:1rem">
+        <div class="row">
+          <div class="field" style="margin:0"><label>Case</label>
+            <select onchange="App.openEditorFor(this.value)">
+              ${DB.cases.map(c=>`<option value="${esc(c.case_id)}" ${c.case_id===cs.case_id?"selected":""}>${esc(c.case_name)}</option>`).join("")}
+            </select></div>
+          ${locked?'<span class="tag warn" style="align-self:end;margin-bottom:.4rem">Locked — editing disabled</span>':""}
+        </div>
+        <button class="btn primary" onclick="App.cardForm(null)" ${locked?"disabled":""}>+ New test card</button>
+      </div>
+      <div class="editor-cols">
+        <div>
+          <div class="spread"><div class="panel-h" style="margin-top:0">Categories &amp; subcategories</div>
+            <button class="btn small" onclick="App.addCategory()" ${locked?"disabled":""}>+ Category</button></div>
+          <div id="cat-list">${this.catListHTML(cs, locked)}</div>
+        </div>
+        <div>
+          <div class="panel-h" style="margin-top:0">Test cards</div>
+          <div id="card-list">${this.cardListHTML(cs, locked)}</div>
+        </div>
+      </div>`;
+  },
+
+  catListHTML(cs, locked){
+    const cats = (cs.categories||[]).slice().sort((a,b)=>a.display_order-b.display_order);
+    if (!cats.length) return `<p class="muted">No categories yet.</p>`;
+    return cats.map((c,i)=>`
+      <div class="list-item">
+        <div class="li-name">${esc(c.category_name)} ${c.visible_status===false?'<span class="tag grey">Hidden</span>':""}</div>
+        <div class="row">
+          <button class="btn small ghost" ${locked||i===0?"disabled":""} onclick="App.moveCat('${esc(c.category_id)}',-1)">↑</button>
+          <button class="btn small ghost" ${locked||i===cats.length-1?"disabled":""} onclick="App.moveCat('${esc(c.category_id)}',1)">↓</button>
+          <button class="btn small" ${locked?"disabled":""} onclick="App.renameCat('${esc(c.category_id)}')">Rename</button>
+          <button class="btn small" ${locked?"disabled":""} onclick="App.toggleCatVis('${esc(c.category_id)}')">${c.visible_status===false?"Show":"Hide"}</button>
+          <button class="btn small" ${locked?"disabled":""} onclick="App.addSub('${esc(c.category_id)}')">+ Sub</button>
+          <button class="btn small danger" ${locked?"disabled":""} onclick="App.deleteCat('${esc(c.category_id)}')">✕</button>
+        </div>
+      </div>
+      ${(c.subcategories||[]).slice().sort((a,b)=>a.display_order-b.display_order).map((s,j,arr)=>`
+        <div class="list-item sub">
+          <div>${esc(s.subcategory_name)}</div>
+          <div class="row">
+            <button class="btn small ghost" ${locked||j===0?"disabled":""} onclick="App.moveSub('${esc(c.category_id)}','${esc(s.subcategory_id)}',-1)">↑</button>
+            <button class="btn small ghost" ${locked||j===arr.length-1?"disabled":""} onclick="App.moveSub('${esc(c.category_id)}','${esc(s.subcategory_id)}',1)">↓</button>
+            <button class="btn small" ${locked?"disabled":""} onclick="App.renameSub('${esc(c.category_id)}','${esc(s.subcategory_id)}')">Rename</button>
+            <button class="btn small danger" ${locked?"disabled":""} onclick="App.deleteSub('${esc(c.category_id)}','${esc(s.subcategory_id)}')">✕</button>
+          </div>
+        </div>`).join("")}
+    `).join("");
+  },
+
+  cardListHTML(cs, locked){
+    const cards = cs.test_cards.slice().sort((a,b)=>{
+      const ca = getCat(cs,a.category_id), cb = getCat(cs,b.category_id);
+      return ((ca?ca.display_order:99)-(cb?cb.display_order:99)) || ((a.display_order||0)-(b.display_order||0));
+    });
+    if (!cards.length) return `<p class="muted">No test cards yet.</p>`;
+    return cards.map(t=>`
+      <div class="list-item">
+        <div>
+          <div class="li-name">${esc(t.test_name)} ${t.active_status===false?'<span class="tag grey">Inactive</span>':""}</div>
+          <div class="muted" style="font-size:.82rem">${esc(catName(cs,t.category_id))} › ${esc(subName(cs,t.category_id,t.subcategory_id))}
+            · ${t.is_side_specific?"side-specific":"not side-specific"}</div>
+        </div>
+        <div class="row">
+          <button class="btn small" ${locked?"disabled":""} onclick="App.cardForm('${esc(t.test_card_id)}')">Edit</button>
+          <button class="btn small" ${locked?"disabled":""} onclick="App.toggleCardActive('${esc(t.test_card_id)}')">${t.active_status===false?"Activate":"Deactivate"}</button>
+          <button class="btn small danger" ${locked?"disabled":""} onclick="App.deleteCard('${esc(t.test_card_id)}')">✕</button>
+        </div>
+      </div>`).join("");
+  },
+
+  guardLocked(cs){
+    if (cs.locked_status){ toast("Case is locked. Unlock it under Cases first."); return true; }
+    return false;
+  },
+
+  addCategory(){
+    const cs = getCase(this.editorCaseId); if (this.guardLocked(cs)) return;
+    const name = prompt("Category name:"); if (!name) return;
+    cs.categories.push({ category_id: uid("cat"), category_name: name.trim(),
+      display_order: (cs.categories.length+1), visible_status: true, subcategories: [] });
+    audit(cs.case_id,"category_added",name); cs.updated_at=nowISO(); saveDB(); this.renderEditor();
+  },
+  renameCat(id){
+    const cs = getCase(this.editorCaseId); if (this.guardLocked(cs)) return;
+    const c = getCat(cs,id);
+    const name = prompt("Rename category:", c.category_name); if (!name) return;
+    audit(cs.case_id,"category_renamed",c.category_name+" → "+name);
+    c.category_name = name.trim(); cs.updated_at=nowISO(); saveDB(); this.renderEditor();
+  },
+  toggleCatVis(id){
+    const cs = getCase(this.editorCaseId); if (this.guardLocked(cs)) return;
+    const c = getCat(cs,id); c.visible_status = c.visible_status===false;
+    audit(cs.case_id, c.visible_status?"category_shown":"category_hidden", c.category_name);
+    saveDB(); this.renderEditor();
+  },
+  moveCat(id, dir){
+    const cs = getCase(this.editorCaseId); if (this.guardLocked(cs)) return;
+    const cats = cs.categories.slice().sort((a,b)=>a.display_order-b.display_order);
+    const i = cats.findIndex(c=>c.category_id===id);
+    const j = i + dir; if (j<0 || j>=cats.length) return;
+    [cats[i].display_order, cats[j].display_order] = [cats[j].display_order, cats[i].display_order];
+    saveDB(); this.renderEditor();
+  },
+  deleteCat(id){
+    const cs = getCase(this.editorCaseId); if (this.guardLocked(cs)) return;
+    const c = getCat(cs,id);
+    const used = cs.test_cards.some(t=>t.category_id===id);
+    if (used){ toast("Move or delete this category's test cards first."); return; }
+    if (!confirm(`Delete category "${c.category_name}"?`)) return;
+    cs.categories = cs.categories.filter(x=>x.category_id!==id);
+    audit(cs.case_id,"category_deleted",c.category_name); saveDB(); this.renderEditor();
+  },
+  addSub(catId){
+    const cs = getCase(this.editorCaseId); if (this.guardLocked(cs)) return;
+    const c = getCat(cs,catId);
+    const name = prompt("Subcategory name:"); if (!name) return;
+    c.subcategories.push({ subcategory_id: uid("sub"), subcategory_name: name.trim(),
+      display_order: c.subcategories.length+1, visible_status: true });
+    audit(cs.case_id,"subcategory_added",c.category_name+" › "+name); saveDB(); this.renderEditor();
+  },
+  renameSub(catId, subId){
+    const cs = getCase(this.editorCaseId); if (this.guardLocked(cs)) return;
+    const s = getSub(getCat(cs,catId), subId);
+    const name = prompt("Rename subcategory:", s.subcategory_name); if (!name) return;
+    audit(cs.case_id,"subcategory_renamed",s.subcategory_name+" → "+name);
+    s.subcategory_name = name.trim(); saveDB(); this.renderEditor();
+  },
+  moveSub(catId, subId, dir){
+    const cs = getCase(this.editorCaseId); if (this.guardLocked(cs)) return;
+    const c = getCat(cs,catId);
+    const subs = c.subcategories.slice().sort((a,b)=>a.display_order-b.display_order);
+    const i = subs.findIndex(s=>s.subcategory_id===subId);
+    const j = i + dir; if (j<0 || j>=subs.length) return;
+    [subs[i].display_order, subs[j].display_order] = [subs[j].display_order, subs[i].display_order];
+    saveDB(); this.renderEditor();
+  },
+  deleteSub(catId, subId){
+    const cs = getCase(this.editorCaseId); if (this.guardLocked(cs)) return;
+    const c = getCat(cs,catId); const s = getSub(c, subId);
+    if (cs.test_cards.some(t=>t.subcategory_id===subId)){
+      toast("Move or delete this subcategory's test cards first."); return;
+    }
+    if (!confirm(`Delete subcategory "${s.subcategory_name}"?`)) return;
+    c.subcategories = c.subcategories.filter(x=>x.subcategory_id!==subId);
+    audit(cs.case_id,"subcategory_deleted",s.subcategory_name); saveDB(); this.renderEditor();
+  },
+  toggleCardActive(id){
+    const cs = getCase(this.editorCaseId); if (this.guardLocked(cs)) return;
+    const t = cs.test_cards.find(x=>x.test_card_id===id);
+    t.active_status = t.active_status===false;
+    audit(cs.case_id, t.active_status?"card_activated":"card_deactivated", t.test_name);
+    saveDB(); this.renderEditor();
+  },
+  deleteCard(id){
+    const cs = getCase(this.editorCaseId); if (this.guardLocked(cs)) return;
+    const t = cs.test_cards.find(x=>x.test_card_id===id);
+    if (!confirm(`Delete test card "${t.test_name}"?`)) return;
+    cs.test_cards = cs.test_cards.filter(x=>x.test_card_id!==id);
+    audit(cs.case_id,"card_deleted",t.test_name); saveDB(); this.renderEditor();
+  },
+
+  /* ============ admin: test card form ============ */
+  cardForm(cardId){
+    const cs = getCase(this.editorCaseId);
+    if (this.guardLocked(cs)) return;
+    const t = cardId ? cs.test_cards.find(x=>x.test_card_id===cardId) : null;
+    const cats = cs.categories.slice().sort((a,b)=>a.display_order-b.display_order);
+    if (!cats.length){ toast("Create at least one category and subcategory first."); return; }
+    const selCat = t ? t.category_id : cats[0].category_id;
+    const R = (t && t.results) || {};
+    const g = (side, field) => esc((R[side] && R[side][field]) || "");
+    $("modal-box").innerHTML = `
+      <h3>${t?"Edit test card":"New test card"}</h3>
+      <div class="grid2">
+        <div class="field"><label>Test name</label><input type="text" id="tf-name" value="${esc(t?t.test_name:"")}"></div>
+        <div class="field"><label>Response flag (optional)</label><input type="text" id="tf-flag" value="${esc(t?t.response_flag:"")}"></div>
+      </div>
+      <div class="field"><label>Aliases (comma-separated)</label>
+        <input type="text" id="tf-aliases" value="${esc(t?(t.aliases||[]).join(", "):"")}" placeholder="e.g. Jobe, Empty can, Supraspinatus test"></div>
+      <div class="grid2">
+        <div class="field"><label>Category</label>
+          <select id="tf-cat" onchange="App.refreshSubSelect()">
+            ${cats.map(c=>`<option value="${esc(c.category_id)}" ${c.category_id===selCat?"selected":""}>${esc(c.category_name)}</option>`).join("")}
+          </select></div>
+        <div class="field"><label>Subcategory</label><select id="tf-sub"></select></div>
+      </div>
+      <div class="grid2">
+        <div class="field"><label>Side-specific?</label>
+          <select id="tf-side" onchange="App.refreshSideFields()">
+            <option value="yes" ${t&&t.is_side_specific?"selected":""}>Yes — right / left</option>
+            <option value="no" ${t&&!t.is_side_specific?"selected":""}>No — single result</option>
+          </select></div>
+        <div class="field"><label>Display order</label>
+          <input type="number" id="tf-order" value="${t?(t.display_order||1):1}" min="1"></div>
+      </div>
+      <div class="field"><label>Caution note (optional)</label>
+        <input type="text" id="tf-caution" value="${esc(t?t.caution_note:"")}"></div>
+
+      <div id="tf-sides-yes">
+        <div class="panel-h">Right side</div>
+        <div class="field"><label>Result text</label><textarea id="tf-r-result">${g("right","result_text")}</textarea></div>
+        <div class="field"><label>Patient wording (optional)</label><input type="text" id="tf-r-pw" value="${g("right","patient_wording")}"></div>
+        <div class="panel-h">Left side</div>
+        <div class="field"><label>Result text</label><textarea id="tf-l-result">${g("left","result_text")}</textarea></div>
+        <div class="field"><label>Patient wording (optional)</label><input type="text" id="tf-l-pw" value="${g("left","patient_wording")}"></div>
+        <div class="panel-h">Both sides — combined wording (optional)</div>
+        <p class="muted" style="font-size:.83rem;margin-bottom:.6rem">If blank, "Both sides" shows the right and left results stacked.</p>
+        <div class="field"><label>Result text</label><textarea id="tf-b-result">${g("bilateral","result_text")}</textarea></div>
+        <div class="field"><label>Patient wording (optional)</label><input type="text" id="tf-b-pw" value="${g("bilateral","patient_wording")}"></div>
+      </div>
+      <div id="tf-sides-no">
+        <div class="panel-h">Result</div>
+        <div class="field"><label>Result text</label><textarea id="tf-s-result">${g("single","result_text") || g("not_side_specific","result_text")}</textarea></div>
+        <div class="field"><label>Patient wording (optional)</label><input type="text" id="tf-s-pw" value="${g("single","patient_wording") || g("not_side_specific","patient_wording")}"></div>
+      </div>
+
+      <div class="row" style="margin-top:.6rem">
+        <button class="btn primary" onclick="App.saveCard(${t?"'"+esc(t.test_card_id)+"'":"null"})">Save test card</button>
+        <button class="btn ghost" onclick="App.closeModal()">Cancel</button>
+      </div>`;
+    $("edit-modal").classList.add("open");
+    this.refreshSubSelect(t ? t.subcategory_id : null);
+    this.refreshSideFields();
+  },
+
+  refreshSubSelect(selected){
+    const cs = getCase(this.editorCaseId);
+    const cat = getCat(cs, $("tf-cat").value);
+    const subs = (cat.subcategories||[]).slice().sort((a,b)=>a.display_order-b.display_order);
+    $("tf-sub").innerHTML = subs.length
+      ? subs.map(s=>`<option value="${esc(s.subcategory_id)}" ${s.subcategory_id===selected?"selected":""}>${esc(s.subcategory_name)}</option>`).join("")
+      : `<option value="">(no subcategories — add one first)</option>`;
+  },
+
+  refreshSideFields(){
+    const yes = $("tf-side").value === "yes";
+    $("tf-sides-yes").style.display = yes ? "" : "none";
+    $("tf-sides-no").style.display = yes ? "none" : "";
+  },
+
+  saveCard(id){
+    const cs = getCase(this.editorCaseId);
+    if (this.guardLocked(cs)) return;
+    const name = $("tf-name").value.trim();
+    if (!name){ toast("Test name is required."); return; }
+    if (!$("tf-sub").value){ toast("Assign a subcategory."); return; }
+    const sideSpecific = $("tf-side").value === "yes";
+    const results = {};
+    if (sideSpecific){
+      results.right = { result_text: $("tf-r-result").value.trim(), patient_wording: $("tf-r-pw").value.trim() };
+      results.left  = { result_text: $("tf-l-result").value.trim(), patient_wording: $("tf-l-pw").value.trim() };
+      const bt = $("tf-b-result").value.trim();
+      if (bt) results.bilateral = { result_text: bt, patient_wording: $("tf-b-pw").value.trim() };
+    } else {
+      results.single = { result_text: $("tf-s-result").value.trim(), patient_wording: $("tf-s-pw").value.trim() };
+    }
+    const data = {
+      test_name: name,
+      aliases: $("tf-aliases").value.split(",").map(s=>s.trim()).filter(Boolean),
+      category_id: $("tf-cat").value,
+      subcategory_id: $("tf-sub").value,
+      is_side_specific: sideSpecific,
+      results,
+      response_flag: $("tf-flag").value.trim(),
+      caution_note: $("tf-caution").value.trim(),
+      display_order: parseInt($("tf-order").value) || 1,
+    };
+    if (id){
+      const t = cs.test_cards.find(x=>x.test_card_id===id);
+      Object.assign(t, data);
+      audit(cs.case_id,"card_edited",name);
+    } else {
+      cs.test_cards.push(Object.assign({ test_card_id: uid("card"), active_status: true }, data));
+      audit(cs.case_id,"card_added",name);
+    }
+    cs.updated_at = nowISO(); saveDB(); this.closeModal(); this.renderEditor(); toast("Test card saved.");
+  },
+
+  closeModal(){ $("edit-modal").classList.remove("open"); },
+
+  /* ============ admin: access log ============ */
+  logFilters: {},
+
+  renderLogs(){
+    const body = $("admin-body");
+    const f = this.logFilters;
+    const opt = (arr, sel) => `<option value="">All</option>` +
+      arr.map(v=>`<option value="${esc(v)}" ${v===sel?"selected":""}>${esc(v)}</option>`).join("");
+    const u = k => [...new Set(DB.logs.map(l=>l[k]).filter(Boolean))].sort();
+    const logs = this.filteredLogs();
+    const groups = [...new Set(logs.map(l=>l.group_number))];
+    body.innerHTML = `
+      <h2 style="font-size:1.1rem;margin-bottom:1rem">Access / release log</h2>
+      <div class="filters">
+        <div class="field"><label>Case</label><select onchange="App.setLogFilter('case_name',this.value)">${opt(u("case_name"),f.case_name)}</select></div>
+        <div class="field"><label>Session</label><select onchange="App.setLogFilter('assessment_session',this.value)">${opt(u("assessment_session"),f.assessment_session)}</select></div>
+        <div class="field"><label>Group</label><select onchange="App.setLogFilter('group_number',this.value)">${opt(u("group_number"),f.group_number)}</select></div>
+        <div class="field"><label>SP / examiner</label><select onchange="App.setLogFilter('sp_examiner_user',this.value)">${opt(u("sp_examiner_user"),f.sp_examiner_user)}</select></div>
+        <div class="field"><label>Category</label><select onchange="App.setLogFilter('category_name',this.value)">${opt(u("category_name"),f.category_name)}</select></div>
+        <div class="field"><label>Subcategory</label><select onchange="App.setLogFilter('subcategory_name',this.value)">${opt(u("subcategory_name"),f.subcategory_name)}</select></div>
+        <div class="field"><label>Test</label><select onchange="App.setLogFilter('test_name',this.value)">${opt(u("test_name"),f.test_name)}</select></div>
+      </div>
+      <div class="kpi-row">
+        <div class="kpi"><b>${logs.length}</b><span>log entries</span></div>
+        <div class="kpi"><b>${groups.length}</b><span>groups</span></div>
+        <div class="kpi"><b>${[...new Set(logs.map(l=>l.test_card_id+"|"+l.side_viewed+"|"+l.group_number))].length}</b><span>distinct releases</span></div>
+      </div>
+      <div class="row" style="margin-bottom:1rem">
+        <button class="btn" onclick="App.exportLogs('json')">Export filtered — JSON</button>
+        <button class="btn" onclick="App.exportLogs('csv')">Export filtered — CSV</button>
+        <button class="btn danger" onclick="App.clearLogs()">Clear all logs</button>
+      </div>
+      ${this.groupSummaryHTML(logs)}
+      <div class="panel-h">Entries (newest first)</div>
+      ${logs.length ? `<div style="overflow-x:auto"><table class="data"><thead><tr>
+          <th>When</th><th>Group</th><th>Test</th><th>Side</th><th>Category</th><th>Source</th><th>Repeat</th><th>SP</th><th>Session</th>
+        </tr></thead><tbody>
+        ${logs.slice().reverse().map(l=>`<tr>
+          <td>${new Date(l.timestamp).toLocaleString()}</td>
+          <td><b>${esc(l.group_number)}</b></td>
+          <td>${esc(l.test_name)}</td>
+          <td>${esc(l.side_viewed.replace(/_/g," "))}</td>
+          <td>${esc(l.category_name)} › ${esc(l.subcategory_name)}</td>
+          <td>${esc(l.accessed_from)}</td>
+          <td>${l.repeat_view?"yes":""}</td>
+          <td>${esc(l.sp_examiner_user)}</td>
+          <td>${esc(l.assessment_session)}</td>
+        </tr>`).join("")}
+        </tbody></table></div>`
+        : `<p class="muted">No log entries match the current filters.</p>`}`;
+  },
+
+  setLogFilter(k,v){ if (v) this.logFilters[k]=v; else delete this.logFilters[k]; this.renderLogs(); },
+
+  filteredLogs(){
+    return DB.logs.filter(l => Object.entries(this.logFilters).every(([k,v]) => l[k]===v));
+  },
+
+  groupSummaryHTML(logs){
+    const byGroup = {};
+    logs.forEach(l=>{
+      const k = l.group_number + " — " + l.case_name;
+      (byGroup[k] = byGroup[k] || new Map());
+      const rk = l.test_name + " (" + l.side_viewed.replace(/_/g," ") + ")";
+      byGroup[k].set(rk, (byGroup[k].get(rk)||0)+1);
+    });
+    const keys = Object.keys(byGroup).sort();
+    if (!keys.length) return "";
+    return `<div class="panel-h">What each group accessed</div>` + keys.map(k=>`
+      <div class="card" style="margin-bottom:.7rem">
+        <div class="spread"><b>Group ${esc(k)}</b>
+          <button class="btn small" onclick="App.exportGroup('${esc(k.split(" — ")[0])}')">Export this group — JSON</button></div>
+        <div class="muted" style="font-size:.88rem;margin-top:.4rem">
+          ${[...byGroup[k].entries()].map(([t,n])=>esc(t)+(n>1?` ×${n}`:"")).join(" · ")}
+        </div>
+      </div>`).join("");
+  },
+
+  exportLogs(fmt){
+    const logs = this.filteredLogs();
+    if (fmt==="json"){
+      download("pty1015_access_log.json", JSON.stringify(logs, null, 2));
+    } else {
+      const cols = ["timestamp","case_name","assessment_session","group_number","sp_examiner_user",
+        "test_name","side_viewed","category_name","subcategory_name","accessed_from",
+        "result_viewed","patient_wording_viewed","repeat_view","test_card_id","log_id"];
+      const csv = cols.join(",") + "\n" +
+        logs.map(l=>cols.map(c=>csvCell(l[c])).join(",")).join("\n");
+      download("pty1015_access_log.csv", csv, "text/csv");
+    }
+    toast("Log exported.");
+  },
+
+  exportGroup(group){
+    const logs = DB.logs.filter(l=>l.group_number===group);
+    download(`pty1015_group_${group}_releases.json`, JSON.stringify(logs, null, 2));
+    toast("Group " + group + " log exported.");
+  },
+
+  clearLogs(){
+    if (!confirm("Delete ALL access logs on this device? Export first if you need them.")) return;
+    if (!confirm("This cannot be undone. Confirm deletion of all logs?")) return;
+    DB.logs = []; saveDB(); this.renderLogs(); toast("Logs cleared.");
+  },
+
+  /* ============ admin: import / export ============ */
+  renderIO(){
+    const body = $("admin-body");
+    body.innerHTML = `
+      <h2 style="font-size:1.1rem;margin-bottom:1rem">Import / Export</h2>
+      <p class="muted" style="margin-bottom:1.4rem;max-width:62ch">
+        All data lives in this browser on this device. To set up SP tablets, export the case here and
+        import it on each tablet. After the assessment, export each tablet's access log and consolidate.</p>
+
+      <div class="io-block card">
+        <div class="panel-h" style="margin-top:0">Export case</div>
+        <div class="field"><label>Case</label>
+          <select id="io-case">${DB.cases.map(c=>`<option value="${esc(c.case_id)}">${esc(c.case_name)}</option>`).join("")}</select></div>
+        <div class="row">
+          <button class="btn primary" onclick="App.exportCase('full')">Full result bank — JSON</button>
+          <button class="btn" onclick="App.exportCase('structure')">Category structure only — JSON</button>
+        </div>
+      </div>
+
+      <div class="io-block card">
+        <div class="panel-h" style="margin-top:0">Import case</div>
+        <p class="muted" style="font-size:.88rem;margin-bottom:.7rem">
+          Accepts a full case JSON (as exported above, or hand-written to the documented schema).
+          If a case with the same <code>case_id</code> exists, you will be asked whether to replace it.</p>
+        <div class="field"><label>Choose file</label>
+          <input type="file" id="io-file" accept=".json,application/json"></div>
+        <div class="field"><label>Or paste JSON</label>
+          <textarea id="io-paste" placeholder='{"case_id": "...", "case_name": "...", "categories": [...], "test_cards": [...]}'></textarea></div>
+        <button class="btn primary" onclick="App.importCase()">Import case</button>
+      </div>
+
+      <div class="io-block card">
+        <div class="panel-h" style="margin-top:0">Logs</div>
+        <div class="row">
+          <button class="btn" onclick="App.exportLogs('json')">Access log — JSON</button>
+          <button class="btn" onclick="App.exportLogs('csv')">Access log — CSV</button>
+        </div>
+      </div>
+
+      <div class="io-block card">
+        <div class="panel-h" style="margin-top:0">Full backup (cases + logs + settings)</div>
+        <div class="row">
+          <button class="btn" onclick="App.exportBackup()">Export backup — JSON</button>
+          <label class="btn" style="position:relative;overflow:hidden">Restore backup
+            <input type="file" accept=".json" style="position:absolute;inset:0;opacity:0;cursor:pointer"
+              onchange="App.restoreBackup(this)"></label>
+        </div>
+        <p class="muted" style="font-size:.85rem;margin-top:.6rem">Restoring replaces everything on this device.</p>
+      </div>`;
+  },
+
+  exportCase(kind){
+    const cs = getCase($("io-case").value);
+    if (kind==="structure"){
+      const out = { case_id: cs.case_id, case_name: cs.case_name,
+        categories: cs.categories };
+      download(cs.case_id + "_structure.json", JSON.stringify(out, null, 2));
+    } else {
+      download(cs.case_id + ".json", JSON.stringify(cs, null, 2));
+    }
+    toast("Exported.");
+  },
+
+  importCase(){
+    const file = $("io-file").files[0];
+    const pasted = $("io-paste").value.trim();
+    const handle = text => {
+      let obj;
+      try { obj = JSON.parse(text); }
+      catch(e){ toast("Invalid JSON: " + e.message); return; }
+      this.ingestCase(obj);
+    };
+    if (file){
+      const r = new FileReader();
+      r.onload = () => handle(r.result);
+      r.readAsText(file);
+    } else if (pasted){
+      handle(pasted);
+    } else {
+      toast("Choose a file or paste JSON first.");
+    }
+  },
+
+  ingestCase(obj){
+    if (!obj || !obj.case_id || !obj.case_name){
+      toast("JSON must include case_id and case_name."); return;
+    }
+    obj.categories = obj.categories || [];
+    obj.test_cards = (obj.test_cards || []).map(t => {
+      // normalise flat-field variants of the data model into the nested results object
+      if (!t.results){
+        t.results = {};
+        if (t.right_result || t.left_result){
+          t.results.right = { result_text: t.right_result||"", patient_wording: t.right_patient_wording||"" };
+          t.results.left  = { result_text: t.left_result||"",  patient_wording: t.left_patient_wording||"" };
+          if (t.bilateral_result) t.results.bilateral = { result_text: t.bilateral_result, patient_wording: t.bilateral_patient_wording||"" };
+          t.is_side_specific = true;
+        } else {
+          t.results.single = { result_text: t.not_side_specific_result||"", patient_wording: t.not_side_specific_patient_wording||"" };
+          t.is_side_specific = false;
+        }
+      }
+      if (t.results.not_side_specific && !t.results.single) t.results.single = t.results.not_side_specific;
+      t.aliases = t.aliases || [];
+      t.active_status = t.active_status !== false;
+      return t;
+    });
+    obj.locked_status = !!obj.locked_status;
+    obj.created_at = obj.created_at || nowISO();
+    obj.updated_at = nowISO();
+    obj.assessment_name = obj.assessment_name || "";
+    obj.description = obj.description || "";
+    const existing = getCase(obj.case_id);
+    if (existing){
+      if (!confirm(`A case with id "${obj.case_id}" already exists ("${existing.case_name}"). Replace it?`)) return;
+      DB.cases = DB.cases.map(c => c.case_id===obj.case_id ? obj : c);
+      audit(obj.case_id, "case_replaced_by_import", obj.case_name);
+    } else {
+      DB.cases.push(obj);
+      audit(obj.case_id, "case_imported", obj.case_name);
+    }
+    saveDB();
+    $("io-paste").value=""; $("io-file").value="";
+    toast(`Imported "${obj.case_name}" — ${obj.test_cards.length} test cards.`);
+    this.renderIO();
+  },
+
+  exportBackup(){
+    download("pty1015_lookup_backup_" + new Date().toISOString().slice(0,10) + ".json",
+      JSON.stringify(DB, null, 2));
+    toast("Backup exported.");
+  },
+
+  restoreBackup(input){
+    const file = input.files[0]; if (!file) return;
+    const r = new FileReader();
+    r.onload = () => {
+      let obj;
+      try { obj = JSON.parse(r.result); }
+      catch(e){ toast("Invalid backup file."); return; }
+      if (!obj.cases || !obj.settings){ toast("Not a valid backup file."); return; }
+      if (!confirm("Replace ALL data on this device with this backup?")) return;
+      DB = obj; saveDB(); toast("Backup restored.");
+      this.renderIO();
+    };
+    r.readAsText(file);
+    input.value = "";
+  },
+
+  /* ============ admin: settings ============ */
+  renderSettings(){
+    $("admin-body").innerHTML = `
+      <h2 style="font-size:1.1rem;margin-bottom:1rem">Settings</h2>
+      <div class="card" style="max-width:440px;margin-bottom:1rem">
+        <div class="panel-h" style="margin-top:0">SP / examiner passcode</div>
+        <p class="muted" style="font-size:.85rem;margin-bottom:.7rem">
+          Required to start an SP session. Current passcode: <code id="sp-pass-show">••••••</code>
+          <button class="btn small ghost" onclick="App.revealSPPass()">show</button></p>
+        <div class="field"><label>New SP passcode</label><input type="password" id="set-sp-pass"></div>
+        <button class="btn primary" onclick="App.changeSPPass()">Change SP passcode</button>
+      </div>
+      <div class="card" style="max-width:440px">
+        <div class="panel-h" style="margin-top:0">Admin passcode</div>
+        <div class="field"><label>New passcode</label><input type="password" id="set-pass"></div>
+        <button class="btn primary" onclick="App.changePass()">Change passcode</button>
+        <p class="muted" style="font-size:.83rem;margin-top:.8rem">
+          The passcodes deter casual access on a shared device. They are not cryptographic security:
+          anyone with the file and developer tools can read the data. Do not distribute this file to students.</p>
+      </div>`;
+  },
+  revealSPPass(){ $("sp-pass-show").textContent = DB.settings.spPass; },
+  changeSPPass(){
+    const p = $("set-sp-pass").value.trim();
+    if (p.length < 4){ toast("Use at least 4 characters."); return; }
+    DB.settings.spPass = p; saveDB();
+    $("set-sp-pass").value = ""; $("sp-pass-show").textContent = "••••••";
+    toast("SP passcode changed.");
+  },
+  changePass(){
+    const p = $("set-pass").value.trim();
+    if (p.length < 4){ toast("Use at least 4 characters."); return; }
+    DB.settings.adminPass = p; saveDB();
+    $("set-pass").value = ""; toast("Passcode changed.");
+  }
+};
+
+document.addEventListener("DOMContentLoaded", () => App.init());
+</script>
+</body>
+</html>
