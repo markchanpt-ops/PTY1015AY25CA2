@@ -829,7 +829,7 @@ function seedDB(){
   ];
   return {
     version: 2,
-    settings: { adminPass: "PTY1015MSK1", spPass: "PHYSIO2026" },
+    settings: { adminPass: "PTY1015MSK1", spPass: "MSK2026" },
     cases: [{
       case_id: "pty1015_ca2_shoulder_alice_johnson",
       case_name: "PTY1015 Alice Johnson Shoulder Case",
