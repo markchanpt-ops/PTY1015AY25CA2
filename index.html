@@ -377,7 +377,7 @@ function loadDB(){
     const raw = localStorage.getItem(DB_KEY);
     if (raw) {
       DB = JSON.parse(raw);
-      if (!DB.settings.spPass) { DB.settings.spPass = "sp1015"; saveDB(); }
+      if (!DB.settings.spPass) { DB.settings.spPass = "MSK1CA2"; saveDB(); }
       return;
     }
   } catch(e){ console.warn("DB load failed", e); }
