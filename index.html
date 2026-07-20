@@ -1,3 +1,5 @@
+
+Pty1015 ca2 lookup · HTML
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -33,7 +35,6 @@ button{font-family:inherit;cursor:pointer}
 input,select,textarea{font-family:inherit;font-size:1rem}
 .screen{display:none;min-height:100vh}
 .screen.active{display:block}
-
 /* ---------- shared ---------- */
 .btn{
   display:inline-flex;align-items:center;gap:.4em;
@@ -72,7 +73,6 @@ hr.sep{border:none;border-top:1px solid var(--line);margin:1rem 0}
 .spread{display:flex;justify-content:space-between;align-items:center;gap:.6rem;flex-wrap:wrap}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
 @media(max-width:680px){.grid2{grid-template-columns:1fr}}
-
 /* ---------- role screen ---------- */
 #s-role{display:none}
 #s-role.active{display:flex;align-items:center;justify-content:center;padding:2rem}
@@ -82,14 +82,12 @@ hr.sep{border:none;border-top:1px solid var(--line);margin:1rem 0}
 .role-btn{display:block;width:100%;padding:1.1rem;margin-bottom:.8rem;font-size:1.05rem;
   border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);font-weight:600}
 .role-btn:hover{border-color:var(--accent);color:var(--accent)}
-
 /* ---------- centred forms ---------- */
 .centred{align-items:center;justify-content:center;min-height:100vh;padding:2rem}
 .screen.centred.active{display:flex}
 .form-box{max-width:440px;width:100%;background:var(--panel);border:1px solid var(--line);
   border-radius:14px;padding:1.8rem}
 .form-box h2{font-size:1.2rem;margin-bottom:1.2rem}
-
 /* ---------- SP screen ---------- */
 #s-sp{padding-bottom:4rem}
 .sp-header{
@@ -127,7 +125,6 @@ hr.sep{border:none;border-top:1px solid var(--line);margin:1rem 0}
 .preview .pmeta{font-size:.82rem;color:var(--ink-soft);margin-top:.15rem}
 .preview .paliases{font-size:.82rem;color:var(--ink-soft)}
 .empty-note{color:var(--ink-soft);padding:1.4rem 0;text-align:center}
-
 /* ---------- result overlay ---------- */
 .overlay{position:fixed;inset:0;background:rgba(20,22,26,.45);z-index:50;display:none;
   align-items:flex-start;justify-content:center;padding:2rem 1rem;overflow-y:auto}
@@ -153,14 +150,12 @@ hr.sep{border:none;border-top:1px solid var(--line);margin:1rem 0}
   padding:.7rem 1rem;color:var(--caution);font-size:.92rem;margin-top:.4rem}
 .caution-block b{text-transform:uppercase;font-size:.75rem;letter-spacing:.05em}
 .logged-note{font-size:.78rem;color:var(--ink-soft);margin-top:1rem;display:flex;gap:.4em;align-items:center}
-
 /* SP font scaling */
 #s-sp[data-fs="m"]{--fs-base:18px}
 #s-sp[data-fs="l"]{--fs-base:21px}
 #s-sp[data-fs="xl"]{--fs-base:25px}
 #s-sp[data-fs]{font-size:var(--fs-base)}
 #s-sp .result-block .rtext{font-size:1.25em}
-
 /* ---------- admin ---------- */
 .admin-top{background:var(--ink);color:#fff;padding:.75rem 1.2rem;display:flex;
   justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap}
@@ -210,7 +205,6 @@ table.data tr:last-child td{border-bottom:none}
 </style>
 </head>
 <body>
-
 <!-- ================= ROLE SELECT ================= -->
 <div class="screen" id="s-role">
   <div class="role-box">
@@ -220,7 +214,6 @@ table.data tr:last-child td{border-bottom:none}
     <button class="role-btn" onclick="App.gotoAdminLogin()">Admin</button>
   </div>
 </div>
-
 <!-- ================= SP SESSION SETUP ================= -->
 <div class="screen centred" id="s-sp-setup">
   <div class="form-box">
@@ -241,7 +234,6 @@ table.data tr:last-child td{border-bottom:none}
     </div>
   </div>
 </div>
-
 <!-- ================= ADMIN LOGIN ================= -->
 <div class="screen centred" id="s-admin-login">
   <div class="form-box">
@@ -255,7 +247,6 @@ table.data tr:last-child td{border-bottom:none}
     <p class="muted" style="margin-top:1rem;font-size:.82rem">Default passcode is <code>admin</code>. Change it under Settings after first login.</p>
   </div>
 </div>
-
 <!-- ================= SP MAIN ================= -->
 <div class="screen" id="s-sp" data-fs="m">
   <div class="sp-header">
@@ -292,12 +283,10 @@ table.data tr:last-child td{border-bottom:none}
     <div id="sp-content"></div>
   </div>
 </div>
-
 <!-- ================= RESULT OVERLAY ================= -->
 <div class="overlay" id="card-overlay" onclick="if(event.target===this)App.closeCard()">
   <div class="result-card" id="result-card"></div>
 </div>
-
 <!-- ================= ADMIN ================= -->
 <div class="screen" id="s-admin">
   <div class="admin-top">
@@ -315,14 +304,11 @@ table.data tr:last-child td{border-bottom:none}
   </div>
   <div class="admin-body" id="admin-body"></div>
 </div>
-
 <!-- ================= CARD EDIT MODAL ================= -->
 <div class="modal" id="edit-modal" onclick="if(event.target===this)App.closeModal()">
   <div class="modal-box" id="modal-box"></div>
 </div>
-
 <div class="toast" id="toast"></div>
-
 <script>
 /* =====================================================
    PTY1015 CA2 Objective Result Lookup
@@ -330,10 +316,8 @@ table.data tr:last-child td{border-bottom:none}
    localStorage. Use Import/Export to move data between
    devices or to consolidate logs after an assessment.
    ===================================================== */
-
-const DB_KEY = "PTY1015_LOOKUP_DB_V2";
+const DB_KEY = "PTY1015_LOOKUP_DB_V3";
 const SES_KEY = "PTY1015_LOOKUP_SESSION_V1";
-
 /* ---------------- utilities ---------------- */
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({
@@ -368,10 +352,8 @@ function csvCell(v){
   v = String(v ?? "");
   return /[",\n]/.test(v) ? '"' + v.replace(/"/g,'""') + '"' : v;
 }
-
 /* ---------------- data layer ---------------- */
 let DB = null;
-
 function loadDB(){
   try {
     const raw = localStorage.getItem(DB_KEY);
@@ -385,7 +367,6 @@ function loadDB(){
   saveDB();
 }
 function saveDB(){ localStorage.setItem(DB_KEY, JSON.stringify(DB)); }
-
 function getCase(id){ return DB.cases.find(c => c.case_id === id); }
 function getCat(cs, id){ return (cs.categories||[]).find(c => c.category_id === id); }
 function getSub(cat, id){ return (cat.subcategories||[]).find(s => s.subcategory_id === id); }
@@ -398,453 +379,19 @@ function audit(caseId, action, detail){
   DB.audit.push({ audit_id: uid("aud"), case_id: caseId, actor: "admin",
     action, detail: detail||"", timestamp: nowISO() });
 }
-
 /* ---------------- seed data ---------------- */
 function seedDB(){
-  const cats = [
-    ["observation","Observation",["Global posture","Local shoulder/scapular observation"]],
-    ["functional","Functional assessment",["Overhead tasks","Hand behind neck/back","Sport-specific task"]],
-    ["palpation","Palpation",["Rotator cuff/subacromial","Biceps/anterior shoulder","ACJ/SCJ","Posterior shoulder/scapular muscles"]],
-    ["rom","ROM",["AROM","PROM","Functional ROM"]],
-    ["mlt","MLT",["Cervicoscapular","Pectoral/anterior shoulder"]],
-    ["accessory","Accessory movements",["GHJ","ACJ","SCJ"]],
-    ["mmt","MMT",["Scapular muscles","Shoulder flexion/abduction/extension","Shoulder rotation","Pectoral/horizontal movements"]],
-    ["special","Special tests",["Rotator cuff-related shoulder pain","Rotator cuff integrity","Long head of biceps","Instability","SLAP/labral","ACJ","Symptom modification"]],
-    ["cervneuro","Cervical / neurological screen",["Cervical AROM","Dermatomes","Myotomes","Reflexes","Neurodynamic tests"]]
-  ].map(([id,name,subs],i)=>({
-    category_id:id, category_name:name, display_order:i+1, visible_status:true,
-    subcategories: subs.map((s,j)=>({
-      subcategory_id: id + "_" + norm(s).replace(/ /g,"_"),
-      subcategory_name: s, display_order: j+1, visible_status:true
-    }))
-  }));
-  const sub = (catId, frag) => {
-    const c = cats.find(c=>c.category_id===catId);
-    return c.subcategories.find(s=>s.subcategory_id.includes(frag)).subcategory_id;
-  };
-  // ss: side-specific card; ns: not side-specific card
-  let ord = 0;
-  const ss = (id,name,aliases,catId,subFrag,r,rpw,l,lpw,flag) => ({
-    test_card_id:id, test_name:name, aliases, category_id:catId,
-    subcategory_id:sub(catId,subFrag), is_side_specific:true,
-    results:{ right:{result_text:r, patient_wording:rpw||""},
-              left:{result_text:l, patient_wording:lpw||""} },
-    response_flag:flag||"", caution_note:"", display_order:++ord, active_status:true });
-  const ns = (id,name,aliases,catId,subFrag,res,pw,flag) => ({
-    test_card_id:id, test_name:name, aliases, category_id:catId,
-    subcategory_id:sub(catId,subFrag), is_side_specific:false,
-    results:{ single:{result_text:res, patient_wording:pw||""} },
-    response_flag:flag||"", caution_note:"", display_order:++ord, active_status:true });
-
-  const testCards = [
-    /* ---- Observation ---- */
-    ns("obs_posture","Global postural assessment",["Posture","Postural assessment","Standing observation"],
-      "observation","global",
-      "Mild forward head and rounded shoulder posture. No marked thoracic kyphosis or scoliosis."),
-    ns("obs_scap","Local shoulder/scapular observation",["Scapular observation","Scapular position","Resting scapula"],
-      "observation","local",
-      "Slight resting scapular protraction bilaterally, slightly more on the right. No winging at rest."),
-    ns("obs_humeral_head","Humeral head position",["Humeral head observation"],
-      "observation","local",
-      "Appears normal bilaterally. No visible sulcus or anterior humeral head positioning."),
-    ns("obs_bulk","Muscle bulk / swelling / bruising / ACJ step",["Swelling","Bruising","Muscle wasting","ACJ step"],
-      "observation","local",
-      "No swelling, bruising, ACJ step deformity or obvious cuff/deltoid wasting."),
-    ss("obs_shr","Scapulohumeral rhythm during elevation",["SHR","Scapulohumeral rhythm","Scapular rhythm"],
-      "observation","local",
-      "Mild early scapular elevation/shrug strategy and less smooth rhythm from approximately 80-120 degrees.",
-      "It feels a bit uncomfortable through the middle part, similar to what I get when I swing.",
-      "Smooth.",""),
-
-    /* ---- Functional assessment ---- */
-    ss("fn_overhead","Overhead reach to shelf",["Overhead reach","Overhead task","Shelf reach","Reaching overhead"],
-      "functional","overhead",
-      "Completes task but reports anterior/lateral shoulder pain 4/10 above head height, worse with a light load.",
-      "That is the familiar pain, mainly at the front and side of the shoulder.",
-      "Pain-free.","","Familiar pain reproduced"),
-    ss("fn_hbn","Hand behind neck",["HBN","Functional external rotation"],
-      "functional","hand_behind",
-      "Achieves position with mild anterior shoulder discomfort 2-3/10.",
-      "It is uncomfortable, but not as bad as the golf pain.",
-      "Full and pain-free.",""),
-    ss("fn_hbb","Hand behind back",["HBB","Functional internal rotation","Hand behind back reach"],
-      "functional","hand_behind",
-      "Reaches approximately T10 with anterior shoulder pinch 3-4/10.",
-      "That pinches at the front.",
-      "Reaches approximately T6, pain-free.",""),
-    ns("fn_golf","Simulated golf follow-through",["Golf swing","Golf follow-through","Sport-specific task"],
-      "functional","sport",
-      "Reproduces familiar anterior/lateral shoulder pain 4-5/10 near follow-through. No apprehension or sense of slipping.",
-      "Yes, that is close to the pain I get when I swing.","Familiar pain reproduced"),
-
-    /* ---- Palpation ---- */
-    ss("pal_gt","Greater tuberosity / subacromial region",["Greater tuberosity","Subacromial palpation","Cuff insertion palpation"],
-      "palpation","rotator_cuff",
-      "Mild to moderate tenderness, reproduces familiar lateral/anterior shoulder pain.",
-      "That is quite close to my usual pain.",
-      "Non-tender.","","Familiar tenderness"),
-    ss("pal_groove","Bicipital groove",["Biceps groove","Long head of biceps palpation","LHB palpation"],
-      "palpation","biceps",
-      "Local anterior tenderness 3/10, partly familiar but not the main golf pain.",
-      "That is tender at the front, but it is not exactly the same as when I swing.",
-      "Non-tender.",""),
-    ns("pal_acj","ACJ palpation",["AC joint palpation","Acromioclavicular palpation"],
-      "palpation","acj_scj",
-      "Mild local pressure awareness only. No focal familiar pain.",
-      "I can feel you pressing there, but that is not my usual pain."),
-    ns("pal_scj","SCJ palpation",["SC joint palpation","Sternoclavicular palpation"],
-      "palpation","acj_scj","No tenderness."),
-    ns("pal_ghj_line","Anterior/posterior GHJ joint line",["GHJ joint line","Joint line palpation"],
-      "palpation","biceps",
-      "Mild local pressure discomfort anteriorly only; no deep joint pain.",
-      "It feels like pressure, not the main pain."),
-    ns("pal_coracoid","Coracoid",["Coracoid process palpation"],
-      "palpation","biceps",
-      "Mild non-specific local tenderness, not familiar.",
-      "Tender, but not the same pain."),
-    ns("pal_post","Posterior cuff / scapular borders / upper trapezius",["Posterior cuff palpation","Upper trapezius palpation","Scapular border palpation"],
-      "palpation","posterior",
-      "Mild posterior cuff and upper trapezius tightness. Not symptom-reproducing.",
-      "That feels tight, but not the shoulder pain I came in for."),
-    ns("pal_hypersens","Hypersensitivity screen",["Allodynia screen","Sensitisation screen"],
-      "palpation","rotator_cuff",
-      "Normal. No allodynia or disproportionate pain response."),
-
-    /* ---- ROM: seated or standing ---- */
-    ss("arom_flex_up","Shoulder flexion AROM — seated/standing",["AROM flexion","Active flexion","Forward flexion"],
-      "rom","arom",
-      "165°, pain begins around 130°, familiar anterior/lateral shoulder pain 3–4/10 near end range. Mild shoulder shrug near end range.",
-      "When I lift it myself, it feels more like the pain I get during golf.",
-      "175°, pain-free.",""),
-    ss("prom_flex_up","Shoulder flexion PROM — seated/standing",["PROM flexion","Passive flexion"],
-      "rom","prom",
-      "170°, firm end-feel, mild end-range discomfort only. Less familiar than AROM. Not pain-limited.",
-      "When you move it, it’s only uncomfortable near the end.",
-      "Full, firm end-feel, pain-free.",""),
-    ss("arom_ext_up","Shoulder extension AROM — seated/standing",["AROM extension","Active extension"],
-      "rom","arom",
-      "Full range, mild anterior shoulder tightness only.",
-      "It just feels a bit tight at the front, but that’s not my main pain.",
-      "Full range, pain-free.",""),
-    ss("prom_ext_up","Shoulder extension PROM — seated/standing",["PROM extension","Passive extension"],
-      "rom","prom",
-      "Full range, firm end-feel, no familiar pain.","",
-      "Full range, firm end-feel, no familiar pain.",""),
-    ss("arom_abd_up","Shoulder abduction AROM — seated/standing",["AROM abduction","Active abduction"],
-      "rom","arom",
-      "155–160°. Painful arc from 80–120°, familiar anterior/lateral shoulder pain 4/10. Mild shoulder shrug after 120°.",
-      "That middle range when I lift it myself is the familiar pain.",
-      "175°, pain-free.","","Painful arc 80–120°"),
-    ss("prom_abd_up","Shoulder abduction PROM — seated/standing",["PROM abduction","Passive abduction"],
-      "rom","prom",
-      "165–170°, firm end-feel. Mild end-range discomfort only; pain is less familiar and less intense than AROM. Not pain-limited.",
-      "When you move it, it’s not as sharp.",
-      "Full, firm end-feel, pain-free.",""),
-    ss("arom_er_up","Shoulder external rotation AROM — seated, neutral",["AROM ER","Active external rotation","Lateral rotation AROM"],
-      "rom","arom",
-      "Near full range, mild lateral shoulder ache 2/10. Not clearly familiar.\nTaught position: Seated, shoulder neutral, elbow 90° flexion.",
-      "It’s a bit uncomfortable, but not really my main golf pain.",
-      "Full, pain-free.",""),
-    ss("prom_er_up","Shoulder external rotation PROM — seated, neutral",["PROM ER","Passive external rotation","Lateral rotation PROM"],
-      "rom","prom",
-      "Near full, firm end-feel, mild end-range discomfort only. Not familiar golf pain.\nTaught position: Seated, shoulder neutral, elbow 90° flexion.",
-      "","Full, pain-free.",""),
-    ss("arom_ir_up","Shoulder internal rotation AROM — seated, neutral",["AROM IR","Active internal rotation","Medial rotation AROM"],
-      "rom","arom",
-      "Near full range, mild anterior shoulder awareness only.\nTaught position: Seated, shoulder neutral, elbow 90° flexion.",
-      "I can feel it a little at the front, but it’s not the main pain.",
-      "Full, pain-free.",""),
-    ss("prom_ir_up","Shoulder internal rotation PROM — seated, neutral",["PROM IR","Passive internal rotation","Medial rotation PROM"],
-      "rom","prom",
-      "Near full, firm end-feel, mild anterior tightness only. Not familiar pain.\nTaught position: Seated, shoulder neutral, elbow 90° flexion.",
-      "","Full, pain-free.",""),
-
-    /* ---- ROM: formal taught method ---- */
-    ss("arom_flex_f","Shoulder flexion AROM — supine, formal taught method",["Supine flexion AROM","Formal flexion AROM"],
-      "rom","arom",
-      "165°, familiar anterior/lateral pain near end range.","",
-      "175°, pain-free.",""),
-    ss("prom_flex_f","Shoulder flexion PROM — supine, formal taught method",["Supine flexion PROM","Formal flexion PROM"],
-      "rom","prom",
-      "170°, firm end-feel. Mild end-range discomfort only; less familiar than AROM and not pain-limited.",
-      "When you move it for me, it’s only uncomfortable near the end.",
-      "Full, firm end-feel, pain-free.",""),
-    ss("arom_ext_f","Shoulder extension AROM — prone, formal taught method",["Prone extension AROM","Formal extension AROM"],
-      "rom","arom",
-      "Full range, mild anterior tightness only.",
-      "Just a bit of tightness at the front.",
-      "Full range, pain-free.",""),
-    ss("prom_ext_f","Shoulder extension PROM — prone, formal taught method",["Prone extension PROM","Formal extension PROM"],
-      "rom","prom",
-      "Full range, firm end-feel, no familiar pain.","",
-      "Full range, firm end-feel, no familiar pain.",""),
-    ss("arom_abd_f","Shoulder abduction AROM — supine, formal taught method",["Supine abduction AROM","Formal abduction AROM"],
-      "rom","arom",
-      "155–160°, familiar painful arc still present but slightly less obvious than upright.",
-      "It is worse when I lift it myself.",
-      "175°, pain-free.","","Painful arc present"),
-    ss("prom_abd_f","Shoulder abduction PROM — supine, formal taught method",["Supine abduction PROM","Formal abduction PROM"],
-      "rom","prom",
-      "165–170°, firm end-feel. Mild end-range discomfort only; pain less familiar and less intense than AROM. Not pain-limited.",
-      "When you move it, it’s not as sharp.",
-      "Full, firm end-feel, pain-free.",""),
-    ss("arom_er_f","Shoulder external rotation AROM — supine, 90° abduction",["Supine ER AROM","ER AROM in abduction","90/90 ER AROM"],
-      "rom","arom",
-      "75°, mild lateral shoulder ache 2/10. No apprehension.\nTaught position: Supine, shoulder 90° abduction, elbow 90° flexion, arm supported.",
-      "A bit uncomfortable at the end, but not the main pain unless I have to resist.",
-      "80°, pain-free.",""),
-    ss("prom_er_f","Shoulder external rotation PROM — supine, 90° abduction",["Supine ER PROM","ER PROM in abduction","90/90 ER PROM"],
-      "rom","prom",
-      "80°, firm end-feel. Mild end-range discomfort only, not the main golf pain. Not pain-limited.\nTaught position: Supine, shoulder 90° abduction, elbow 90° flexion, arm supported.",
-      "","Full, firm end-feel, pain-free.",""),
-    ss("arom_ir_f","Shoulder internal rotation AROM — supine, 90° abduction",["Supine IR AROM","IR AROM in abduction","90/90 IR AROM"],
-      "rom","arom",
-      "60–65°, mild anterior shoulder discomfort 2–3/10.\nTaught position: Supine, shoulder 90° abduction, elbow 90° flexion, arm supported.",
-      "It feels a bit tight at the front, but not exactly the same as the golf pain.",
-      "70°, pain-free.",""),
-    ss("prom_ir_f","Shoulder internal rotation PROM — supine, 90° abduction",["Supine IR PROM","IR PROM in abduction","90/90 IR PROM"],
-      "rom","prom",
-      "65–70°, firm end-feel with mild end-range stiffness. Local anterior tightness, not strongly familiar pain.\nTaught position: Supine, shoulder 90° abduction, elbow 90° flexion, arm supported.",
-      "","Full, firm end-feel, pain-free.",""),
-
-    /* ---- MLT ---- */
-    ns("mlt_ut","Upper trapezius MLT",["Upper trap length","UT length test"],
-      "mlt","cervicoscapular",
-      "Mild tightness bilaterally, slightly greater on right. Does not reproduce familiar shoulder pain.\nTaught position: Supine. Cervical flexion, contralateral lateral flexion, ipsilateral rotation, then ipsilateral shoulder depression.",
-      "I feel a neck/shoulder stretch, not the golf pain."),
-    ns("mlt_ls","Levator scapulae MLT",["Lev scap length","Levator scapulae length test"],
-      "mlt","cervicoscapular",
-      "Mild right-sided neck/scapular stretch. No familiar anterior/lateral shoulder pain.\nTaught position: Supine. Cervical flexion, contralateral lateral flexion, contralateral rotation, then ipsilateral shoulder depression.",
-      "That is more of a neck stretch."),
-    ns("mlt_pm","Pectoralis minor length",["Pec minor length","Pec minor MLT"],
-      "mlt","pectoral",
-      "Right posterior acromion sits slightly higher from plinth than left, consistent with mild pec minor shortness/rounded shoulder posture. No pain reproduction.\nTaught position: Supine relaxed posture. Measure posterior acromion distance from plinth.",
-      "No pain, just lying here."),
-
-    /* ---- Accessory movements ---- */
-    ss("acc_ghj_ap","GHJ AP glide",["AP glide","Anteroposterior glide","Posterior glide GHJ"],
-      "accessory","ghj",
-      "Mildly stiff, firm end-feel, no familiar pain.",
-      "Pressure only, not my usual pain.",
-      "Normal.",""),
-    ss("acc_ghj_pa","GHJ PA glide",["PA glide","Posteroanterior glide","Anterior glide GHJ"],
-      "accessory","ghj",
-      "Normal to mildly stiff, no familiar pain.",
-      "Just pressure.",
-      "Normal.",""),
-    ns("acc_ghj_caudad","GHJ longitudinal caudad glide",["Caudad glide","Longitudinal glide","Inferior glide GHJ"],
-      "accessory","ghj",
-      "Normal quantity, firm end-feel, no apprehension.",
-      "I feel the movement, but it does not feel like it is slipping."),
-    ns("acc_acj","ACJ accessory movement",["ACJ glide","AC joint accessory"],
-      "accessory","acj",
-      "Normal, no familiar pain.","Pressure only."),
-    ns("acc_scj","SCJ accessory movement",["SCJ glide","SC joint accessory"],
-      "accessory","scj",
-      "Normal, no familiar pain.","No pain."),
-
-    /* ---- MMT ---- */
-    ss("mmt_serratus","Serratus anterior MMT — scapular abduction/upward rotation",["Serratus anterior strength","Scapular protraction MMT"],
-      "mmt","scapular",
-      "4+/5, mild fatigue and slight scapular control deficit, no familiar pain.\nTaught position: Sitting, tested arm approximately 130 degrees shoulder flexion, elbow straight; resistance proximal to elbow.",
-      "It feels a bit effortful, not really the main pain.",
-      "5/5.",""),
-    ss("mmt_elevation","Scapular elevation MMT — upper trapezius/levator/rhomboids",["Shrug MMT","Scapular elevation strength"],
-      "mmt","scapular",
-      "5/5, symmetrical, no familiar pain.\nTaught position: Sitting, shrug shoulders; resistance downward over shoulders.",
-      "No pain.",
-      "5/5, symmetrical, no familiar pain.\nTaught position: Sitting, shrug shoulders; resistance downward over shoulders.",
-      "No pain."),
-    ss("mmt_midtrap","Middle trapezius MMT — scapular adduction",["Mid trap strength","Scapular adduction MMT"],
-      "mmt","scapular",
-      "4+/5, mild fatigue, no familiar anterior/lateral pain.\nTaught position: Prone, shoulder 90 degrees abduction, elbow 90 degrees flexion; resistance on distal humerus.",
-      "It just feels like effort.",
-      "5/5.",""),
-    ss("mmt_lowtrap","Lower trapezius MMT — scapular depression/adduction",["Lower trap strength","Lower trapezius strength"],
-      "mmt","scapular",
-      "4/5 with mild superior/posterior shoulder effort discomfort, not familiar golf pain.\nTaught position: Prone, arm overhead approximately 145 degrees abduction, thumb up; resistance on distal humerus.",
-      "This is hard, but not the same pain.",
-      "5/5.",""),
-    ss("mmt_rhomboids","Rhomboids MMT — scapular adduction/downward rotation",["Rhomboid strength"],
-      "mmt","scapular",
-      "4+/5, no familiar pain.\nTaught position: Prone, hand behind back; resistance downward/outward on distal humerus.",
-      "No real pain.",
-      "5/5.",""),
-    ss("mmt_flexion","Shoulder flexion MMT",["Flexion strength","Resisted flexion"],
-      "mmt","flexion",
-      "4+/5 with mild anterior shoulder discomfort 2-3/10.\nTaught position: Sitting, arm by side to 90 degrees flexion, elbow slightly flexed, forearm pronated; resistance distal humerus.",
-      "It is uncomfortable at the front, but not the worst one.",
-      "5/5.",""),
-    ss("mmt_abduction","Shoulder abduction MMT",["Abduction strength","Resisted abduction"],
-      "mmt","flexion",
-      "4/5, familiar anterior/lateral shoulder pain 4/10, pain-inhibited.\nTaught position: Sitting, arm by side to 90 degrees abduction, elbow slightly flexed, palm down; resistance distal humerus.",
-      "Yes, that is the familiar pain.",
-      "5/5.","","Familiar pain, pain-inhibited"),
-    ss("mmt_extension","Shoulder extension MMT",["Extension strength","Resisted extension"],
-      "mmt","flexion",
-      "5/5, mild anterior tightness only.\nTaught position: Prone, arm by side, shoulder internally rotated/palm up; resistance posterior humerus proximal to elbow.",
-      "Just tight at the front.",
-      "5/5.",""),
-    ss("mmt_horiz_abd","Shoulder horizontal abduction MMT",["Horizontal abduction strength"],
-      "mmt","pectoral",
-      "4+/5, mild posterior shoulder effort discomfort, not familiar.\nTaught position: Prone, shoulder 90 degrees abduction, elbow extended or flexed; resistance distal humerus.",
-      "Not the golf pain.",
-      "5/5.",""),
-    ss("mmt_pec_clav","Shoulder horizontal adduction MMT — pectoralis major clavicular head",["Pec major clavicular","Horizontal adduction clavicular"],
-      "mmt","pectoral",
-      "5/5, mild anterior pressure only.\nTaught position: Supine, shoulder approx 60 degrees abduction; diagonal resistance outward/downward as appropriate.",
-      "I feel some pressure at the front, but not the main pain.",
-      "5/5.",""),
-    ss("mmt_pec_sternal","Shoulder horizontal adduction MMT — pectoralis major sternal head",["Pec major sternal","Horizontal adduction sternal"],
-      "mmt","pectoral",
-      "5/5, mild anterior stretch/pressure only.\nTaught position: Supine, shoulder approx 120 degrees abduction; diagonal resistance outward/upward as appropriate.",
-      "Not my usual pain.",
-      "5/5.",""),
-    ss("mmt_er_neutral","Shoulder external rotation MMT — neutral position",["ER strength neutral","Resisted ER neutral","ER MMT"],
-      "mmt","rotation",
-      "4+/5, familiar lateral shoulder pain 3/10, less provocative than abduction-position ER.\nTaught position: Sitting, shoulder neutral/arm by side, elbow 90 degrees flexion; resist ER.",
-      "That is a bit like the golf pain, but milder.",
-      "5/5.","","Familiar pain reproduced"),
-    ss("mmt_ir_neutral","Shoulder internal rotation MMT — neutral position",["IR strength neutral","Resisted IR neutral","IR MMT"],
-      "mmt","rotation",
-      "5/5, mild anterior discomfort only.\nTaught position: Sitting, shoulder neutral/arm by side, elbow 90 degrees flexion; resist IR.",
-      "A little uncomfortable in front, but not the main one.",
-      "5/5.",""),
-    ss("mmt_er_abd","Shoulder external rotation MMT — shoulder in abduction",["ER strength in abduction","Resisted ER 90/90"],
-      "mmt","rotation",
-      "4/5, familiar anterior/lateral pain 4/10 and pain-inhibited.\nTaught position: Prone, shoulder 90 degrees abduction, elbow 90 degrees flexion, arm supported on towel; resist ER.",
-      "Yes, this feels closer to the pain I get when I swing.",
-      "5/5.","","Familiar pain, pain-inhibited"),
-    ss("mmt_ir_abd","Shoulder internal rotation MMT — shoulder in abduction",["IR strength in abduction","Resisted IR 90/90"],
-      "mmt","rotation",
-      "5/5, mild anterior discomfort 2/10 only.\nTaught position: Prone, shoulder 90 degrees abduction, elbow 90 degrees flexion, arm supported on towel; resist IR.",
-      "A bit uncomfortable, but not the same pain.",
-      "5/5.",""),
-
-    /* ---- Special tests ---- */
-    ss("sp_hk","Hawkins-Kennedy",["Hawkins","HK test"],
-      "special","rotator_cuff_related",
-      "Positive: familiar anterior/lateral shoulder pain 3-4/10.",
-      "That is the familiar pinchy pain.",
-      "Negative.","","Familiar pain reproduced"),
-    ss("sp_neer","Neer's / modified active Neer's",["Neers","Neer test","Modified Neer"],
-      "special","rotator_cuff_related",
-      "Positive near end-range elevation; familiar pain, less provocative than resisted abduction/ER.",
-      "That catches the same area near the top.",
-      "Negative.","","Familiar pain reproduced"),
-    ss("sp_arc","Painful arc",["Arc test","Abduction arc"],
-      "special","rotator_cuff_related",
-      "Positive 80-120 degrees abduction; pain reduces slightly above arc.",
-      "Yes, that middle range is the familiar pain.",
-      "Negative.","","Painful arc 80–120°"),
-    ss("sp_jobe","Empty can / Jobe",["Jobe","Jobe's test","Empty can","Supraspinatus test"],
-      "special","rotator_cuff_related",
-      "Positive: familiar pain 4/10 with mild pain-inhibited weakness; no drop.",
-      "Yes, that is very similar to the pain I get.",
-      "Negative.","","Familiar pain reproduced"),
-    ss("sp_er_resist","External rotation resistance",["ER resistance","Resisted ER test","Infraspinatus test"],
-      "special","rotator_cuff_related",
-      "Positive: familiar lateral/anterior shoulder pain, mild pain-inhibited weakness.",
-      "That feels like the golf pain.",
-      "Negative.","","Familiar pain reproduced"),
-    ns("sp_belly","Belly press",["Belly press test","Napoleon test"],
-      "special","integrity",
-      "Negative. No weakness; mild anterior awareness only.",
-      "A little pressure, but not my usual pain."),
-    ns("sp_er_lag","External rotation lag sign",["ER lag","ERLS","Lag sign"],
-      "special","integrity",
-      "Negative. Able to hold position; no lag.",
-      "No pain, just effort."),
-    ns("sp_liftoff","Lift-off test",["Gerber's lift-off","Lift off","Subscapularis lift-off"],
-      "special","integrity",
-      "Negative for subscapularis weakness. Mild anterior discomfort only.",
-      "A little uncomfortable, but not the main pain."),
-    ns("sp_bearhug","Bear hug test",["Bear hug"],
-      "special","integrity",
-      "Negative. No clear weakness or familiar pain.",
-      "No, not the same pain."),
-    ns("sp_speeds","Speed's test",["Speeds","Speed test","Biceps resistance test"],
-      "special","biceps",
-      "Mild to moderate anterior shoulder discomfort 3-4/10. Partly familiar, but less similar and less intense than cuff-loading tests.",
-      "That is uncomfortable at the front, but not quite the main pain I get when I swing."),
-    ns("sp_yergason","Yergason's test",["Yergasons","Supination resistance test"],
-      "special","biceps",
-      "Mild local anterior discomfort 2/10. No snapping. Does not clearly reproduce familiar golf pain.",
-      "Tender at the front, but not the same."),
-    ns("sp_apprehension","Apprehension / relocation",["Apprehension test","Relocation test","Crank apprehension"],
-      "special","instability",
-      "Mild anterior stretch discomfort at end-range abduction/ER but no apprehension, guarding or sense of slipping. Relocation produces no meaningful change.",
-      "It stretches a bit, but I do not feel like it will come out."),
-    ns("sp_loadshift","Load and shift",["Load shift test"],
-      "special","instability",
-      "Normal physiological translation bilaterally with firm end-feel. No apprehension.",
-      "I can feel movement, but it does not feel unstable."),
-    ns("sp_postdrawer","Posterior drawer",["Posterior drawer test"],
-      "special","instability",
-      "Normal posterior translation, firm end-feel, no apprehension or familiar pain.",
-      "Just pressure."),
-    ns("sp_sulcus","Sulcus sign",["Sulcus test"],
-      "special","instability",
-      "Negative bilaterally. Mild traction sensation only.",
-      "I feel the pull, but no pain."),
-    ns("sp_obrien","O'Brien's active compression",["O'Briens","OBrien test","Active compression test"],
-      "special","slap",
-      "Thumb-down produces anterior discomfort 3/10. Palm-up slightly easier but not clearly abolished. No deep joint pain, catching, clunking or instability.",
-      "It is uncomfortable at the front, but I do not feel anything deep or catching."),
-    ns("sp_bicepsload","Biceps Load II",["Biceps load 2","Biceps load test"],
-      "special","slap",
-      "Mild anterior shoulder discomfort 2-3/10 only. No deep pain, click, catch or familiar golf pain.",
-      "A bit uncomfortable, but not the main pain."),
-    ns("sp_scarf","Scarf / cross-body adduction",["Scarf test","Cross body adduction","Horizontal adduction test"],
-      "special","acj",
-      "Posterior shoulder stretch and mild superior shoulder pressure 2/10. No focal ACJ pain and no familiar anterior/lateral shoulder pain.",
-      "I feel a stretch and pressure, but that is not my usual pain."),
-    ns("sp_ssm_thoracic","Shoulder symptom modification — thoracic extension",["Thoracic extension SMP","SSMP thoracic"],
-      "special","symptom",
-      "Minimal change to symptoms during elevation.",
-      "Maybe slightly easier, but not a big difference."),
-    ns("sp_ssm_scap","Shoulder symptom modification — scapular assistance/reposition",["Scap assist","Scapular assistance test","SAT","Scapular reposition"],
-      "special","symptom",
-      "Slight reduction of painful arc intensity from 4/10 to around 2-3/10 with scapular assistance/reposition.",
-      "That feels a little easier, but I can still feel it.","Symptom modification positive"),
-
-    /* ---- Cervical / neurological screen ---- */
-    ns("cn_arom","Cervical AROM",["Neck AROM","Cervical screen","Cervical clearing"],
-      "cervneuro","cervical_arom",
-      "Full range. Mild general neck tightness only; no reproduction of shoulder pain.",
-      "My neck is a little tight, but it is not the shoulder pain."),
-    ns("cn_dermatomes","Dermatomes",["Sensation testing","Light touch testing"],
-      "cervneuro","dermatomes",
-      "Grossly normal bilaterally."),
-    ns("cn_myotomes","Myotomes",["Myotome testing"],
-      "cervneuro","myotomes",
-      "Grossly normal bilaterally outside pain-limited shoulder tests."),
-    ns("cn_reflexes","Reflexes",["DTR","Deep tendon reflexes","Biceps reflex","Triceps reflex"],
-      "cervneuro","reflexes",
-      "Biceps, brachioradialis and triceps reflexes present and symmetrical."),
-    ns("cn_ulnt","Upper limb neurodynamic tests",["ULNT","ULTT","Neurodynamic tests","Median nerve test"],
-      "cervneuro","neurodynamic",
-      "Mild stretch sensation only, no reproduction of familiar shoulder pain or distal symptoms.",
-      "I feel a stretch, not pins and needles and not my usual pain.")
-  ];
+  const seededCase = {"case_id": "pty1015_ca2_shoulder_alice_johnson", "case_name": "PTY1015 Alice Johnson Shoulder Case", "description": "Student release cards — taught tests only. Use these cards when students perform or explicitly request a test. The model/SP does not need to act. Read the result and the patient wording where relevant. Mild discomfort on some non-primary tests reflects local tissue sensitisation; it should not be treated as equivalent to reproduction of the familiar golf-related pain. Student-facing interpretation prompt (after findings recorded): decide whether each response reproduces the patient's familiar pain, creates local/non-specific discomfort, or is negative. Prioritise findings that reproduce the familiar golf-related anterior/lateral shoulder pain under elevation and cuff-loading demands.", "assessment_name": "PTY1015 CA2 Practical", "created_by": "admin", "created_at": "2026-06-25T07:00:55.770Z", "updated_at": "2026-07-20T08:03:36.057Z", "locked_status": false, "categories": [{"category_id": "observation", "category_name": "Observation", "display_order": 1, "visible_status": true, "subcategories": [{"subcategory_id": "observation_global_posture", "subcategory_name": "Global posture", "display_order": 1, "visible_status": true}, {"subcategory_id": "observation_local_shoulder_scapular_observation", "subcategory_name": "Local shoulder/scapular observation", "display_order": 2, "visible_status": true}]}, {"category_id": "functional", "category_name": "Functional assessment", "display_order": 2, "visible_status": true, "subcategories": [{"subcategory_id": "functional_overhead_tasks", "subcategory_name": "Overhead tasks", "display_order": 1, "visible_status": true}, {"subcategory_id": "functional_hand_behind_neck_back", "subcategory_name": "Hand behind neck/back", "display_order": 2, "visible_status": true}, {"subcategory_id": "functional_sport_specific_task", "subcategory_name": "Sport-specific task", "display_order": 3, "visible_status": true}]}, {"category_id": "palpation", "category_name": "Palpation", "display_order": 3, "visible_status": true, "subcategories": [{"subcategory_id": "palpation_rotator_cuff_subacromial", "subcategory_name": "Rotator cuff/subacromial", "display_order": 1, "visible_status": true}, {"subcategory_id": "palpation_biceps_anterior_shoulder", "subcategory_name": "Biceps/anterior shoulder", "display_order": 2, "visible_status": true}, {"subcategory_id": "palpation_acj_scj", "subcategory_name": "ACJ/SCJ", "display_order": 3, "visible_status": true}, {"subcategory_id": "palpation_posterior_shoulder_scapular_muscles", "subcategory_name": "Posterior shoulder/scapular muscles", "display_order": 4, "visible_status": true}]}, {"category_id": "rom", "category_name": "ROM", "display_order": 4, "visible_status": true, "subcategories": [{"subcategory_id": "rom_arom", "subcategory_name": "AROM", "display_order": 1, "visible_status": true}, {"subcategory_id": "rom_prom", "subcategory_name": "PROM", "display_order": 2, "visible_status": true}, {"subcategory_id": "rom_functional_rom", "subcategory_name": "Functional ROM", "display_order": 3, "visible_status": true}]}, {"category_id": "mlt", "category_name": "MLT", "display_order": 5, "visible_status": true, "subcategories": [{"subcategory_id": "mlt_cervicoscapular", "subcategory_name": "Cervicoscapular", "display_order": 1, "visible_status": true}, {"subcategory_id": "mlt_pectoral_anterior_shoulder", "subcategory_name": "Pectoral/anterior shoulder", "display_order": 2, "visible_status": true}]}, {"category_id": "accessory", "category_name": "Accessory movements", "display_order": 6, "visible_status": true, "subcategories": [{"subcategory_id": "accessory_ghj", "subcategory_name": "GHJ", "display_order": 1, "visible_status": true}, {"subcategory_id": "accessory_acj", "subcategory_name": "ACJ", "display_order": 2, "visible_status": true}, {"subcategory_id": "accessory_scj", "subcategory_name": "SCJ", "display_order": 3, "visible_status": true}]}, {"category_id": "mmt", "category_name": "MMT", "display_order": 7, "visible_status": true, "subcategories": [{"subcategory_id": "mmt_scapular_muscles", "subcategory_name": "Scapular muscles", "display_order": 1, "visible_status": true}, {"subcategory_id": "mmt_shoulder_flexion_abduction_extension", "subcategory_name": "Shoulder flexion/abduction/extension", "display_order": 2, "visible_status": true}, {"subcategory_id": "mmt_shoulder_rotation", "subcategory_name": "Shoulder rotation", "display_order": 3, "visible_status": true}, {"subcategory_id": "mmt_pectoral_horizontal_movements", "subcategory_name": "Pectoral/horizontal movements", "display_order": 4, "visible_status": true}]}, {"category_id": "special", "category_name": "Special tests", "display_order": 8, "visible_status": true, "subcategories": [{"subcategory_id": "special_rotator_cuff_related_shoulder_pain", "subcategory_name": "Rotator cuff-related shoulder pain", "display_order": 1, "visible_status": true}, {"subcategory_id": "special_rotator_cuff_integrity", "subcategory_name": "Rotator cuff integrity", "display_order": 2, "visible_status": true}, {"subcategory_id": "special_long_head_of_biceps", "subcategory_name": "Long head of biceps", "display_order": 3, "visible_status": true}, {"subcategory_id": "special_instability", "subcategory_name": "Instability", "display_order": 4, "visible_status": true}, {"subcategory_id": "special_slap_labral", "subcategory_name": "SLAP/labral", "display_order": 5, "visible_status": true}, {"subcategory_id": "special_acj", "subcategory_name": "ACJ", "display_order": 6, "visible_status": true}, {"subcategory_id": "special_symptom_modification", "subcategory_name": "Symptom modification", "display_order": 7, "visible_status": true}]}, {"category_id": "cervneuro", "category_name": "Cervical / neurological screen", "display_order": 9, "visible_status": true, "subcategories": [{"subcategory_id": "cervneuro_cervical_arom", "subcategory_name": "Cervical AROM", "display_order": 1, "visible_status": true}, {"subcategory_id": "cervneuro_dermatomes", "subcategory_name": "Dermatomes", "display_order": 2, "visible_status": true}, {"subcategory_id": "cervneuro_myotomes", "subcategory_name": "Myotomes", "display_order": 3, "visible_status": true}, {"subcategory_id": "cervneuro_reflexes", "subcategory_name": "Reflexes", "display_order": 4, "visible_status": true}, {"subcategory_id": "cervneuro_neurodynamic_tests", "subcategory_name": "Neurodynamic tests", "display_order": 5, "visible_status": true}]}], "test_cards": [{"test_card_id": "obs_posture", "test_name": "Global postural assessment", "aliases": ["Posture", "Postural assessment", "Standing observation"], "category_id": "observation", "subcategory_id": "observation_global_posture", "is_side_specific": false, "results": {"single": {"result_text": "Mild forward head and rounded shoulder posture. No marked thoracic kyphosis or scoliosis.", "patient_wording": ""}}, "response_flag": "", "caution_note": "", "display_order": 1, "active_status": true}, {"test_card_id": "obs_scap", "test_name": "Local shoulder/scapular observation", "aliases": ["Scapular observation", "Scapular position", "Resting scapula"], "category_id": "observation", "subcategory_id": "observation_local_shoulder_scapular_observation", "is_side_specific": false, "results": {"single": {"result_text": "Slight resting scapular protraction bilaterally, slightly more on the right. No winging at rest.", "patient_wording": ""}}, "response_flag": "", "caution_note": "", "display_order": 2, "active_status": true}, {"test_card_id": "obs_humeral_head", "test_name": "Humeral head position", "aliases": ["Humeral head observation"], "category_id": "observation", "subcategory_id": "observation_local_shoulder_scapular_observation", "is_side_specific": false, "results": {"single": {"result_text": "Appears normal bilaterally. No visible sulcus or anterior humeral head positioning.", "patient_wording": ""}}, "response_flag": "", "caution_note": "", "display_order": 3, "active_status": true}, {"test_card_id": "obs_bulk", "test_name": "Muscle bulk / swelling / bruising / ACJ step", "aliases": ["Swelling", "Bruising", "Muscle wasting", "ACJ step"], "category_id": "observation", "subcategory_id": "observation_local_shoulder_scapular_observation", "is_side_specific": false, "results": {"single": {"result_text": "No swelling, bruising, ACJ step deformity or obvious cuff/deltoid wasting.", "patient_wording": ""}}, "response_flag": "", "caution_note": "", "display_order": 4, "active_status": true}, {"test_card_id": "obs_shr", "test_name": "Scapulohumeral rhythm during elevation", "aliases": ["SHR", "Scapulohumeral rhythm", "Scapular rhythm"], "category_id": "observation", "subcategory_id": "observation_local_shoulder_scapular_observation", "is_side_specific": true, "results": {"right": {"result_text": "Mild early scapular elevation/shrug strategy and less smooth rhythm from approximately 80-120 degrees.", "patient_wording": "It feels a bit uncomfortable through the middle part, 3/10 pain shoulder, similar to what I get when I swing."}, "left": {"result_text": "Smooth.", "patient_wording": ""}}, "response_flag": "", "caution_note": "", "display_order": 5, "active_status": true}, {"test_card_id": "fn_overhead", "test_name": "Overhead reach to shelf", "aliases": ["Overhead reach", "Overhead task", "Shelf reach", "Reaching overhead"], "category_id": "functional", "subcategory_id": "functional_overhead_tasks", "is_side_specific": true, "results": {"right": {"result_text": "Completes task but reports anterior/lateral shoulder pain 4/10 above head height, worse with a light load.", "patient_wording": "That is the familiar pain, mainly at the front and side of the shoulder."}, "left": {"result_text": "Pain-free.", "patient_wording": ""}}, "response_flag": "Familiar pain reproduced", "caution_note": "", "display_order": 6, "active_status": true}, {"test_card_id": "fn_hbn", "test_name": "Hand behind neck", "aliases": ["HBN", "Functional external rotation"], "category_id": "functional", "subcategory_id": "functional_hand_behind_neck_back", "is_side_specific": true, "results": {"right": {"result_text": "Achieves position with mild anterior shoulder discomfort 2-3/10.", "patient_wording": "It is uncomfortable, but not as bad as the golf pain."}, "left": {"result_text": "Full and pain-free.", "patient_wording": ""}}, "response_flag": "", "caution_note": "", "display_order": 7, "active_status": true}, {"test_card_id": "fn_hbb", "test_name": "Hand behind back", "aliases": ["HBB", "Functional internal rotation", "Hand behind back reach"], "category_id": "functional", "subcategory_id": "functional_hand_behind_neck_back", "is_side_specific": true, "results": {"right": {"result_text": "Reaches approximately T10 with anterior shoulder pinch 3-4/10.", "patient_wording": "That pinches at the front."}, "left": {"result_text": "Reaches approximately T6, pain-free.", "patient_wording": ""}}, "response_flag": "", "caution_note": "", "display_order": 8, "active_status": true}, {"test_card_id": "fn_golf", "test_name": "Simulated golf follow-through", "aliases": ["Golf swing", "Golf follow-through", "Sport-specific task"], "category_id": "functional", "subcategory_id": "functional_sport_specific_task", "is_side_specific": false, "results": {"single": {"result_text": "Reproduces familiar anterior/lateral shoulder pain 5–6/10 near follow-through depending on swing intensity.\nIf they make you swing harder, it should approach 6/10", "patient_wording": "Yes, that is close to the pain I get when I swing. It will probably be higher if I use an actual golf club I think"}}, "response_flag": "Familiar pain reproduced", "caution_note": "", "display_order": 9, "active_status": true}, {"test_card_id": "pal_gt", "test_name": "Greater tuberosity / subacromial region", "aliases": ["Greater tuberosity", "Subacromial palpation", "Cuff insertion palpation"], "category_id": "palpation", "subcategory_id": "palpation_rotator_cuff_subacromial", "is_side_specific": true, "results": {"right": {"result_text": "Mild to moderate tenderness (3-4/10), reproduces familiar lateral/anterior shoulder pain.", "patient_wording": "That is quite close to my usual pain."}, "left": {"result_text": "Non-tender.", "patient_wording": ""}}, "response_flag": "Familiar tenderness", "caution_note": "", "display_order": 10, "active_status": true}, {"test_card_id": "pal_groove", "test_name": "Bicipital groove", "aliases": ["Biceps groove", "Long head of biceps palpation", "LHB palpation"], "category_id": "palpation", "subcategory_id": "palpation_biceps_anterior_shoulder", "is_side_specific": true, "results": {"right": {"result_text": "Local anterior tenderness 3/10, partly familiar but not the main golf pain.", "patient_wording": "That is tender at the front, but it is not exactly the same as when I swing."}, "left": {"result_text": "Non-tender.", "patient_wording": ""}}, "response_flag": "", "caution_note": "", "display_order": 11, "active_status": true}, {"test_card_id": "pal_acj", "test_name": "ACJ palpation", "aliases": ["AC joint palpation", "Acromioclavicular palpation"], "category_id": "palpation", "subcategory_id": "palpation_acj_scj", "is_side_specific": false, "results": {"single": {"result_text": "Mild local pressure awareness only. No focal familiar pain.", "patient_wording": "I can feel you pressing there, but that is not my usual pain."}}, "response_flag": "", "caution_note": "", "display_order": 12, "active_status": true}, {"test_card_id": "pal_scj", "test_name": "SCJ palpation", "aliases": ["SC joint palpation", "Sternoclavicular palpation"], "category_id": "palpation", "subcategory_id": "palpation_acj_scj", "is_side_specific": false, "results": {"single": {"result_text": "No tenderness.", "patient_wording": ""}}, "response_flag": "", "caution_note": "", "display_order": 13, "active_status": true}, {"test_card_id": "pal_ghj_line", "test_name": "Anterior/posterior GHJ joint line", "aliases": ["GHJ joint line", "Joint line palpation"], "category_id": "palpation", "subcategory_id": "palpation_biceps_anterior_shoulder", "is_side_specific": false, "results": {"single": {"result_text": "Mild local pressure discomfort anteriorly only (1-2/10); no deep joint pain.", "patient_wording": "It feels like pressure, not the main pain."}}, "response_flag": "", "caution_note": "", "display_order": 14, "active_status": true}, {"test_card_id": "pal_coracoid", "test_name": "Coracoid", "aliases": ["Coracoid process palpation"], "category_id": "palpation", "subcategory_id": "palpation_biceps_anterior_shoulder", "is_side_specific": false, "results": {"single": {"result_text": "Mild non-specific local tenderness (1-2/10) not familiar.", "patient_wording": "Tender, but not the same pain."}}, "response_flag": "", "caution_note": "", "display_order": 15, "active_status": true}, {"test_card_id": "pal_post", "test_name": "Posterior cuff / scapular borders / upper trapezius", "aliases": ["Posterior cuff palpation", "Upper trapezius palpation", "Scapular border palpation"], "category_id": "palpation", "subcategory_id": "palpation_posterior_shoulder_scapular_muscles", "is_side_specific": false, "results": {"single": {"result_text": "Mild posterior cuff and upper trapezius tightness with 1/10 local discomfort. Does not reproduce familiar pain", "patient_wording": "That feels tight, but not the shoulder pain I came in for."}}, "response_flag": "", "caution_note": "", "display_order": 16, "active_status": true}, {"test_card_id": "pal_hypersens", "test_name": "Hypersensitivity screen", "aliases": ["Allodynia screen", "Sensitisation screen"], "category_id": "palpation", "subcategory_id": "palpation_rotator_cuff_subacromial", "is_side_specific": false, "results": {"single": {"result_text": "Normal. No allodynia or disproportionate pain response.", "patient_wording": ""}}, "response_flag": "", "caution_note": "", "display_order": 17, "active_status": false}, {"test_card_id": "arom_flex_up", "test_name": "Shoulder flexion AROM — seated/standing", "aliases": ["AROM flexion", "Active flexion", "Forward flexion"], "category_id": "rom", "subcategory_id": "rom_arom", "is_side_specific": true, "results": {"right": {"result_text": "165°. Pain begins ~130°. Familiar anterior/lateral pain 3–4/10 near end-range. Mild shrug near end-range.", "patient_wording": "When I lift it myself, it feels more like the pain I get during golf."}, "left": {"result_text": "175°, pain-free.", "patient_wording": ""}}, "response_flag": "", "caution_note": "", "display_order": 18, "active_status": true}, {"test_card_id": "prom_flex_up", "test_name": "Shoulder flexion PROM — seated/standing", "aliases": ["PROM flexion", "Passive flexion"], "category_id": "rom", "subcategory_id": "rom_prom", "is_side_specific": true, "results": {"right": {"result_text": "170°, firm end-feel, mild end-range discomfort only (1-2/10). Less familiar than AROM. Not pain-limited.", "patient_wording": "When you move it, it’s only uncomfortable near the end."}, "left": {"result_text": "Full, firm end-feel, pain-free.", "patient_wording": ""}}, "response_flag": "", "caution_note": "", "display_order": 19, "active_status": true}, {"test_card_id": "arom_ext_up", "test_name": "Shoulder extension AROM — seated/standing", "aliases": ["AROM extension", "Active extension"], "category_id": "rom", "subcategory_id": "rom_arom", "is_side_specific": true, "results": {"right": {"result_text": "60°. Full, pain-free.", "patient_wording": ""}, "left": {"result_text": "60°. Full, pain-free", "patient_wording": ""}}, "response_flag": "", "caution_note": "", "display_order": 20, "active_status": true}, {"test_card_id": "prom_ext_up", "test_name": "Shoulder extension PROM — seated/standing", "aliases": ["PROM extension", "Passive extension"], "category_id": "rom", "subcategory_id": "rom_prom", "is_side_specific": true, "results": {"right": {"result_text": "60°. Firm end-feel. Pain-free.", "patient_wording": ""}, "left": {"result_text": "60°. Firm end-feel. Pain-free.", "patient_wording": "I do feel a bit of a stretch at the front of the shoulder"}}, "response_flag": "", "caution_note": "", "display_order": 21, "active_status": true}, {"test_card_id": "arom_abd_up", "test_name": "Shoulder abduction AROM — seated/standing", "aliases": ["AROM abduction", "Active abduction"], "category_id": "rom", "subcategory_id": "rom_arom", "is_side_specific": true, "results": {"right": {"result_text": "155–160°. Painful arc 80–120°. Familiar anterior/lateral pain 4/10. Mild shrug after 120°.", "patient_wording": "That middle range when I lift it myself is the familiar pain."}, "left": {"result_text": "175°, pain-free.", "patient_wording": ""}}, "response_flag": "Painful arc 80–120°", "caution_note": "", "display_order": 22, "active_status": true}, {"test_card_id": "prom_abd_up", "test_name": "Shoulder abduction PROM — seated/standing", "aliases": ["PROM abduction", "Passive abduction"], "category_id": "rom", "subcategory_id": "rom_prom", "is_side_specific": true, "results": {"right": {"result_text": "165–170°, firm end-feel. Mild end-range discomfort only; pain is less familiar and less intense than AROM. Not pain-limited.\n2/10", "patient_wording": "When you move it, it’s not as sharp."}, "left": {"result_text": "177°, firm end-feel, pain-free.", "patient_wording": ""}}, "response_flag": "", "caution_note": "", "display_order": 23, "active_status": true}, {"test_card_id": "arom_er_up", "test_name": "Shoulder external rotation AROM — seated, neutral", "aliases": ["AROM ER", "Active external rotation", "Lateral rotation AROM"], "category_id": "rom", "subcategory_id": "rom_arom", "is_side_specific": true, "results": {"right": {"result_text": "75°. Mild familiar lateral shoulder pain 2/10.", "patient_wording": "It’s a bit uncomfortable, but not really my main golf pain."}, "left": {"result_text": "80°, Full, pain-free.", "patient_wording": ""}}, "response_flag": "", "caution_note": "", "display_order": 24, "active_status": false}, {"test_card_id": "prom_er_up", "test_name": "Shoulder external rotation PROM — seated, neutral", "aliases": ["PROM ER", "Passive external rotation", "Lateral rotation PROM"], "category_id": "rom", "subcategory_id": "rom_prom", "is_side_specific": true, "results": {"right": {"result_text": "80°. Firm end-feel. mild end-range discomfort only (1/10). Not familiar golf pain.", "patient_wording": ""}, "left": {"result_text": "Full, pain-free.", "patient_wording": ""}}, "response_flag": "", "caution_note": "", "display_order": 25, "active_status": false}, {"test_card_id": "arom_ir_up", "test_name": "Shoulder internal rotation AROM — seated, neutral", "aliases": ["AROM IR", "Active internal rotation", "Medial rotation AROM"], "category_id": "rom", "subcategory_id": "rom_arom", "is_side_specific": true, "results": {"right": {"result_text": "70°. Pain-free.", "patient_wording": ""}, "left": {"result_text": "70°. Pain-free.", "patient_wording": ""}}, "response_flag": "", "caution_note": "", "display_order": 26, "active_status": false}, {"test_card_id": "prom_ir_up", "test_name": "Shoulder internal rotation PROM — seated, neutral", "aliases": ["PROM IR", "Passive internal rotation", "Medial rotation PROM"], "category_id": "rom", "subcategory_id": "rom_prom", "is_side_specific": true, "results": {"right": {"result_text": "70°. Firm end-feel. Pain-free.", "patient_wording": ""}, "left": {"result_text": "70°. Firm end-feel. Pain-free.", "patient_wording": ""}}, "response_flag": "", "caution_note": "", "display_order": 27, "active_status": false}, {"test_card_id": "arom_flex_f", "test_name": "Shoulder flexion AROM — supine, formal taught method", "aliases": ["Supine flexion AROM", "Formal flexion AROM"], "category_id": "rom", "subcategory_id": "rom_arom", "is_side_specific": true, "results": {"right": {"result_text": "170°. Familiar anterior/lateral pain 2–3/10 near end-range. Slightly easier than standing.", "patient_wording": ""}, "left": {"result_text": "175°, pain-free.", "patient_wording": ""}}, "response_flag": "", "caution_note": "", "display_order": 28, "active_status": true}, {"test_card_id": "prom_flex_f", "test_name": "Shoulder flexion PROM — supine, formal taught method", "aliases": ["Supine flexion PROM", "Formal flexion PROM"], "category_id": "rom", "subcategory_id": "rom_prom", "is_side_specific": true, "results": {"right": {"result_text": "170°, firm end-feel. Mild end-range discomfort only; less familiar than AROM and not pain-limited.\n2/10 end-range discomfort", "patient_wording": "When you move it for me, it’s only uncomfortable near the end."}, "left": {"result_text": "Full, firm end-feel, pain-free.", "patient_wording": ""}}, "response_flag": "", "caution_note": "", "display_order": 29, "active_status": true}, {"test_card_id": "arom_ext_f", "test_name": "Shoulder extension AROM — prone, formal taught method", "aliases": ["Prone extension AROM", "Formal extension AROM"], "category_id": "rom", "subcategory_id": "rom_arom", "is_side_specific": true, "results": {"right": {"result_text": "60°. Pain-free.", "patient_wording": "Just a bit of tightness at the front."}, "left": {"result_text": "60°. Pain-free.", "patient_wording": ""}}, "response_flag": "", "caution_note": "", "display_order": 30, "active_status": true}, {"test_card_id": "prom_ext_f", "test_name": "Shoulder extension PROM — prone, formal taught method", "aliases": ["Prone extension PROM", "Formal extension PROM"], "category_id": "rom", "subcategory_id": "rom_prom", "is_side_specific": true, "results": {"right": {"result_text": "Full range, firm end-feel, no familiar pain. Stretch sensation at the end", "patient_wording": ""}, "left": {"result_text": "Full range, firm end-feel, no familiar pain.", "patient_wording": ""}}, "response_flag": "", "caution_note": "", "display_order": 31, "active_status": true}, {"test_card_id": "arom_abd_f", "test_name": "Shoulder abduction AROM — supine, formal taught method", "aliases": ["Supine abduction AROM", "Formal abduction AROM"], "category_id": "rom", "subcategory_id": "rom_arom", "is_side_specific": true, "results": {"right": {"result_text": "160°. Familiar anterior/lateral pain 3/10 near end-range. Less shrug than standing.", "patient_wording": "It is worse when I lift it myself."}, "left": {"result_text": "175°, pain-free.", "patient_wording": ""}}, "response_flag": "Painful arc present", "caution_note": "", "display_order": 32, "active_status": true}, {"test_card_id": "prom_abd_f", "test_name": "Shoulder abduction PROM — supine, formal taught method", "aliases": ["Supine abduction PROM", "Formal abduction PROM"], "category_id": "rom", "subcategory_id": "rom_prom", "is_side_specific": true, "results": {"right": {"result_text": "170°. Firm end-feel. Mild end-range discomfort 1–2/10, not familiar.", "patient_wording": "When you move it, it’s not as sharp."}, "left": {"result_text": "180°. Firm end-feel. Pain-free.", "patient_wording": ""}}, "response_flag": "", "caution_note": "", "display_order": 33, "active_status": true}, {"test_card_id": "arom_er_f", "test_name": "Shoulder external rotation AROM — supine, 90° abduction", "aliases": ["Supine ER AROM", "ER AROM in abduction", "90/90 ER AROM"], "category_id": "rom", "subcategory_id": "rom_arom", "is_side_specific": true, "results": {"right": {"result_text": "75°. Mild familiar lateral shoulder pain 2/10. No apprehension.", "patient_wording": "A bit uncomfortable at the end, but not the main pain unless I have to resist."}, "left": {"result_text": "85°, pain-free.", "patient_wording": ""}}, "response_flag": "", "caution_note": "", "display_order": 34, "active_status": true}, {"test_card_id": "prom_er_f", "test_name": "Shoulder external rotation PROM — supine, 90° abduction", "aliases": ["Supine ER PROM", "ER PROM in abduction", "90/90 ER PROM"], "category_id": "rom", "subcategory_id": "rom_prom", "is_side_specific": true, "results": {"right": {"result_text": "80°. Firm end-feel. Mild end-range discomfort 1/10. No apprehension.", "patient_wording": ""}, "left": {"result_text": "85°, firm end-feel, pain-free.", "patient_wording": ""}}, "response_flag": "", "caution_note": "", "display_order": 35, "active_status": true}, {"test_card_id": "arom_ir_f", "test_name": "Shoulder internal rotation AROM — supine, 90° abduction", "aliases": ["Supine IR AROM", "IR AROM in abduction", "90/90 IR AROM"], "category_id": "rom", "subcategory_id": "rom_arom", "is_side_specific": true, "results": {"right": {"result_text": "60–65°, mild anterior shoulder discomfort 2–3/10.", "patient_wording": "It feels a bit tight at the front, but not exactly the same as the golf pain."}, "left": {"result_text": "70°, pain-free.", "patient_wording": ""}}, "response_flag": "", "caution_note": "", "display_order": 36, "active_status": true}, {"test_card_id": "prom_ir_f", "test_name": "Shoulder internal rotation PROM — supine, 90° abduction", "aliases": ["Supine IR PROM", "IR PROM in abduction", "90/90 IR PROM"], "category_id": "rom", "subcategory_id": "rom_prom", "is_side_specific": true, "results": {"right": {"result_text": "65–70°, firm end-feel with mild end-range stiffness. Local anterior tightness, not strongly familiar pain.", "patient_wording": ""}, "left": {"result_text": "Full, firm end-feel, pain-free, Stretch sensation only.", "patient_wording": "just feels like a deep stretch"}}, "response_flag": "", "caution_note": "", "display_order": 37, "active_status": true}, {"test_card_id": "mlt_ut", "test_name": "Upper trapezius MLT", "aliases": ["Upper trap length", "UT length test"], "category_id": "mlt", "subcategory_id": "mlt_cervicoscapular", "is_side_specific": false, "results": {"single": {"result_text": "Mild limitation bilaterally, slightly greater on the right. Produces a mild upper trapezius/neck stretch, 1/10. Does not reproduce the familiar anterior/lateral shoulder pain.", "patient_wording": "I feel a neck/shoulder stretch, not the golf pain."}}, "response_flag": "", "caution_note": "", "display_order": 38, "active_status": true}, {"test_card_id": "mlt_ls", "test_name": "Levator scapulae MLT", "aliases": ["Lev scap length", "Levator scapulae length test"], "category_id": "mlt", "subcategory_id": "mlt_cervicoscapular", "is_side_specific": false, "results": {"single": {"result_text": "Mild reduction in length on the right compared with the left. Produces a mild posterolateral neck and superior scapular stretch, 1/10. Does not reproduce the familiar anterior/lateral shoulder pain.", "patient_wording": "“That feels like a mild stretch at the back and side of my neck, not my shoulder pain.”"}}, "response_flag": "", "caution_note": "", "display_order": 39, "active_status": true}, {"test_card_id": "mlt_pm", "test_name": "Pectoralis minor length", "aliases": ["Pec minor length", "Pec minor MLT"], "category_id": "mlt", "subcategory_id": "mlt_pectoral_anterior_shoulder", "is_side_specific": false, "results": {"single": {"result_text": "The right posterior acromion rests approximately 1–1.5 cm further from the plinth than the left, consistent with mild right pectoralis minor shortening. Pain-free.", "patient_wording": "No pain"}}, "response_flag": "", "caution_note": "", "display_order": 40, "active_status": true}, {"test_card_id": "acc_ghj_ap", "test_name": "GHJ AP glide", "aliases": ["AP glide", "Anteroposterior glide", "Posterior glide GHJ"], "category_id": "accessory", "subcategory_id": "accessory_ghj", "is_side_specific": true, "results": {"right": {"result_text": "Mildly stiff, firm end-feel, no familiar pain.", "patient_wording": "Pressure only, not my usual pain."}, "left": {"result_text": "Firm end-feel. Pain-free.", "patient_wording": ""}}, "response_flag": "", "caution_note": "", "display_order": 41, "active_status": true}, {"test_card_id": "acc_ghj_pa", "test_name": "GHJ PA glide", "aliases": ["PA glide", "Posteroanterior glide", "Anterior glide GHJ"], "category_id": "accessory", "subcategory_id": "accessory_ghj", "is_side_specific": true, "results": {"right": {"result_text": "Firm end-feel. Mild pressure only. No familiar pain.", "patient_wording": "Just pressure."}, "left": {"result_text": "Firm end-feel. Pain-free.", "patient_wording": ""}}, "response_flag": "", "caution_note": "", "display_order": 42, "active_status": true}, {"test_card_id": "acc_ghj_caudad", "test_name": "GHJ longitudinal caudad glide", "aliases": ["Caudad glide", "Longitudinal glide", "Inferior glide GHJ"], "category_id": "accessory", "subcategory_id": "accessory_ghj", "is_side_specific": false, "results": {"single": {"result_text": "Normal quantity, firm end-feel, no apprehension.", "patient_wording": "I feel the movement, but it does not feel like it is slipping."}}, "response_flag": "", "caution_note": "", "display_order": 43, "active_status": true}, {"test_card_id": "acc_acj", "test_name": "ACJ accessory movement", "aliases": ["ACJ glide", "AC joint accessory"], "category_id": "accessory", "subcategory_id": "accessory_acj", "is_side_specific": false, "results": {"single": {"result_text": "Normal, no familiar pain.", "patient_wording": "Pressure only."}}, "response_flag": "", "caution_note": "", "display_order": 44, "active_status": false}, {"test_card_id": "acc_scj", "test_name": "SCJ accessory movement", "aliases": ["SCJ glide", "SC joint accessory"], "category_id": "accessory", "subcategory_id": "accessory_scj", "is_side_specific": false, "results": {"single": {"result_text": "Normal, no familiar pain.", "patient_wording": "No pain."}}, "response_flag": "", "caution_note": "", "display_order": 45, "active_status": false}, {"test_card_id": "mmt_serratus", "test_name": "Serratus anterior MMT — scapular abduction/upward rotation", "aliases": ["Serratus anterior strength", "Scapular protraction MMT"], "category_id": "mmt", "subcategory_id": "mmt_scapular_muscles", "is_side_specific": true, "results": {"right": {"result_text": "4+/5, mild fatigue and slight scapular control deficit, no familiar pain.\nTaught position: Sitting, tested arm approximately 130 degrees shoulder flexion, elbow straight; resistance proximal to elbow.\n\n4/10 anterior shoulder pain", "patient_wording": "i feel it in the front of my shoulder"}, "left": {"result_text": "5/5.", "patient_wording": ""}}, "response_flag": "", "caution_note": "", "display_order": 46, "active_status": true}, {"test_card_id": "mmt_midtrap", "test_name": "Middle trapezius MMT — scapular adduction", "aliases": ["Mid trap strength", "Scapular adduction MMT"], "category_id": "mmt", "subcategory_id": "mmt_scapular_muscles", "is_side_specific": true, "results": {"right": {"result_text": "4+/5. Mild pain inhibition with reduced endurance. No familiar anterior/lateral shoulder pain", "patient_wording": "It just feels like effort."}, "left": {"result_text": "5/5.", "patient_wording": ""}}, "response_flag": "", "caution_note": "", "display_order": 48, "active_status": true}, {"test_card_id": "mmt_lowtrap", "test_name": "Lower trapezius MMT — scapular depression/adduction", "aliases": ["Lower trap strength", "Lower trapezius strength"], "category_id": "mmt", "subcategory_id": "mmt_scapular_muscles", "is_side_specific": true, "results": {"right": {"result_text": "4/5. Mild superior/posterior shoulder discomfort. Not familiar golf pain. Mild pain inhibition.", "patient_wording": "This is hard, but not the same pain."}, "left": {"result_text": "5/5.", "patient_wording": ""}}, "response_flag": "", "caution_note": "", "display_order": 49, "active_status": true}, {"test_card_id": "mmt_rhomboids", "test_name": "Rhomboids MMT — scapular adduction/downward rotation", "aliases": ["Rhomboid strength"], "category_id": "mmt", "subcategory_id": "mmt_scapular_muscles", "is_side_specific": true, "results": {"right": {"result_text": "4+/5. Mild effort discomfort only. No familiar shoulder pain.", "patient_wording": "No real pain."}, "left": {"result_text": "5/5.", "patient_wording": ""}}, "response_flag": "", "caution_note": "", "display_order": 50, "active_status": true}, {"test_card_id": "mmt_flexion", "test_name": "Shoulder flexion MMT", "aliases": ["Flexion strength", "Resisted flexion"], "category_id": "mmt", "subcategory_id": "mmt_shoulder_flexion_abduction_extension", "is_side_specific": true, "results": {"right": {"result_text": "4+/5 with mild anterior shoulder discomfort 2-3/10.\nTaught position: Sitting, arm by side to 90 degrees flexion, elbow slightly flexed, forearm pronated; resistance distal humerus.", "patient_wording": "It is uncomfortable at the front, but not the worst one."}, "left": {"result_text": "5/5.", "patient_wording": ""}}, "response_flag": "", "caution_note": "", "display_order": 51, "active_status": true}, {"test_card_id": "mmt_abduction", "test_name": "Shoulder abduction MMT", "aliases": ["Abduction strength", "Resisted abduction"], "category_id": "mmt", "subcategory_id": "mmt_shoulder_flexion_abduction_extension", "is_side_specific": true, "results": {"right": {"result_text": "4/5. Familiar anterior/lateral shoulder pain 4/10. Pain-inhibited weakness.", "patient_wording": "Yes, that is the familiar pain."}, "left": {"result_text": "5/5.", "patient_wording": ""}}, "response_flag": "Familiar pain, pain-inhibited", "caution_note": "", "display_order": 52, "active_status": true}, {"test_card_id": "mmt_extension", "test_name": "Shoulder extension MMT", "aliases": ["Extension strength", "Resisted extension"], "category_id": "mmt", "subcategory_id": "mmt_shoulder_flexion_abduction_extension", "is_side_specific": true, "results": {"right": {"result_text": "5/5, \nTaught position: Prone, arm by side, shoulder internally rotated/palm up; resistance posterior humerus proximal to elbow.", "patient_wording": "Just tight at the front."}, "left": {"result_text": "5/5.", "patient_wording": ""}}, "response_flag": "", "caution_note": "", "display_order": 53, "active_status": true}, {"test_card_id": "mmt_horiz_abd", "test_name": "Shoulder horizontal abduction MMT", "aliases": ["Horizontal abduction strength"], "category_id": "mmt", "subcategory_id": "mmt_pectoral_horizontal_movements", "is_side_specific": true, "results": {"right": {"result_text": "4+/5, mild posterior shoulder effort discomfort, not familiar.\nTaught position: Prone, shoulder 90 degrees abduction, elbow extended or flexed; resistance distal humerus.", "patient_wording": "Not the golf pain."}, "left": {"result_text": "5/5.", "patient_wording": ""}}, "response_flag": "", "caution_note": "", "display_order": 54, "active_status": false}, {"test_card_id": "mmt_pec_clav", "test_name": "Shoulder horizontal adduction MMT — pectoralis major clavicular head", "aliases": ["Pec major clavicular", "Horizontal adduction clavicular"], "category_id": "mmt", "subcategory_id": "mmt_pectoral_horizontal_movements", "is_side_specific": true, "results": {"right": {"result_text": "5/5, mild anterior pressure only.\nTaught position: Supine, shoulder approx 60 degrees abduction; diagonal resistance outward/downward as appropriate.", "patient_wording": "I feel some pressure at the front, but not the main pain."}, "left": {"result_text": "5/5.", "patient_wording": ""}}, "response_flag": "", "caution_note": "", "display_order": 55, "active_status": true}, {"test_card_id": "mmt_pec_sternal", "test_name": "Shoulder horizontal adduction MMT — pectoralis major sternal head", "aliases": ["Pec major sternal", "Horizontal adduction sternal"], "category_id": "mmt", "subcategory_id": "mmt_pectoral_horizontal_movements", "is_side_specific": true, "results": {"right": {"result_text": "5/5, mild anterior stretch/pressure only.\nTaught position: Supine, shoulder approx 120 degrees abduction; diagonal resistance outward/upward as appropriate.", "patient_wording": "Not my usual pain."}, "left": {"result_text": "5/5.", "patient_wording": ""}}, "response_flag": "", "caution_note": "", "display_order": 56, "active_status": true}, {"test_card_id": "mmt_er_neutral", "test_name": "Shoulder external rotation MMT — neutral position", "aliases": ["ER strength neutral", "Resisted ER neutral", "ER MMT"], "category_id": "mmt", "subcategory_id": "mmt_shoulder_rotation", "is_side_specific": true, "results": {"right": {"result_text": "4+/5. Familiar lateral shoulder pain 3/10. Mild pain inhibition.", "patient_wording": "That is a bit like the golf pain, but milder."}, "left": {"result_text": "5/5.", "patient_wording": ""}}, "response_flag": "Familiar pain reproduced", "caution_note": "", "display_order": 57, "active_status": true}, {"test_card_id": "mmt_ir_neutral", "test_name": "Shoulder internal rotation MMT — neutral position", "aliases": ["IR strength neutral", "Resisted IR neutral", "IR MMT"], "category_id": "mmt", "subcategory_id": "mmt_shoulder_rotation", "is_side_specific": true, "results": {"right": {"result_text": "5/5, mild anterior discomfort only.\nTaught position: Sitting, shoulder neutral/arm by side, elbow 90 degrees flexion; resist IR.", "patient_wording": "A little uncomfortable in front, but not the main one."}, "left": {"result_text": "5/5.", "patient_wording": ""}}, "response_flag": "", "caution_note": "", "display_order": 58, "active_status": true}, {"test_card_id": "mmt_er_abd", "test_name": "Shoulder external rotation MMT — shoulder in abduction", "aliases": ["ER strength in abduction", "Resisted ER 90/90"], "category_id": "mmt", "subcategory_id": "mmt_shoulder_rotation", "is_side_specific": true, "results": {"right": {"result_text": "4/5. Familiar anterior/lateral shoulder pain 6/10. Clear pain-inhibited weakness.", "patient_wording": "Yes, this feels closer to the pain I get when I swing. I can push through the pain but it really hurts."}, "left": {"result_text": "5/5.", "patient_wording": ""}}, "response_flag": "Familiar pain, pain-inhibited", "caution_note": "", "display_order": 59, "active_status": true}, {"test_card_id": "mmt_ir_abd", "test_name": "Shoulder internal rotation MMT — shoulder in abduction", "aliases": ["IR strength in abduction", "Resisted IR 90/90"], "category_id": "mmt", "subcategory_id": "mmt_shoulder_rotation", "is_side_specific": true, "results": {"right": {"result_text": "5/5, mild anterior discomfort 2/10 only.\nTaught position: Prone, shoulder 90 degrees abduction, elbow 90 degrees flexion, arm supported on towel; resist IR.", "patient_wording": "A bit uncomfortable, but not the same pain."}, "left": {"result_text": "5/5.", "patient_wording": ""}}, "response_flag": "", "caution_note": "", "display_order": 60, "active_status": true}, {"test_card_id": "sp_hk", "test_name": "Hawkins-Kennedy", "aliases": ["Hawkins", "HK test"], "category_id": "special", "subcategory_id": "special_rotator_cuff_related_shoulder_pain", "is_side_specific": true, "results": {"right": {"result_text": "Positive: familiar anterior/lateral shoulder pain 3-4/10.", "patient_wording": "That is the familiar pinchy pain."}, "left": {"result_text": "Negative.", "patient_wording": ""}}, "response_flag": "Familiar pain reproduced", "caution_note": "", "display_order": 61, "active_status": true}, {"test_card_id": "sp_neer", "test_name": "Neer's / modified active Neer's", "aliases": ["Neers", "Neer test", "Modified Neer"], "category_id": "special", "subcategory_id": "special_rotator_cuff_related_shoulder_pain", "is_side_specific": true, "results": {"right": {"result_text": "Positive. Familiar anterior/lateral shoulder pain 3/10 near end-range elevation.", "patient_wording": "That catches the same area near the top."}, "left": {"result_text": "Negative.", "patient_wording": ""}}, "response_flag": "Familiar pain reproduced", "caution_note": "", "display_order": 62, "active_status": true}, {"test_card_id": "sp_arc", "test_name": "Painful arc", "aliases": ["Arc test", "Abduction arc"], "category_id": "special", "subcategory_id": "special_rotator_cuff_related_shoulder_pain", "is_side_specific": true, "results": {"right": {"result_text": "Positive. Familiar anterior/lateral shoulder pain 4/10 between 80° and 120°. Pain reduces above the arc.", "patient_wording": "Yes, that middle range is the familiar pain."}, "left": {"result_text": "Negative.", "patient_wording": ""}}, "response_flag": "Painful arc 80–120°", "caution_note": "", "display_order": 63, "active_status": true}, {"test_card_id": "sp_jobe", "test_name": "Empty can / Jobe", "aliases": ["Jobe", "Jobe's test", "Empty can", "Supraspinatus test"], "category_id": "special", "subcategory_id": "special_rotator_cuff_related_shoulder_pain", "is_side_specific": true, "results": {"right": {"result_text": "Positive: familiar sharp pain 5/10 no drop.", "patient_wording": "Yes, that is very similar to the pain I get."}, "left": {"result_text": "Negative.", "patient_wording": ""}}, "response_flag": "Familiar pain reproduced", "caution_note": "", "display_order": 64, "active_status": true}, {"test_card_id": "sp_er_resist", "test_name": "External rotation resistance", "aliases": ["ER resistance", "Resisted ER test", "Infraspinatus test"], "category_id": "special", "subcategory_id": "special_rotator_cuff_related_shoulder_pain", "is_side_specific": true, "results": {"right": {"result_text": "Positive: familiar lateral/anterior shoulder pain, mild pain-inhibited weakness.", "patient_wording": "That feels like the golf pain."}, "left": {"result_text": "Negative.", "patient_wording": ""}}, "response_flag": "Familiar pain reproduced", "caution_note": "", "display_order": 65, "active_status": true}, {"test_card_id": "sp_belly", "test_name": "Belly press", "aliases": ["Belly press test", "Napoleon test"], "category_id": "special", "subcategory_id": "special_rotator_cuff_integrity", "is_side_specific": false, "results": {"single": {"result_text": "Negative. No weakness; mild anterior awareness only.", "patient_wording": "A little pressure, but not my usual pain."}}, "response_flag": "", "caution_note": "", "display_order": 66, "active_status": true}, {"test_card_id": "sp_er_lag", "test_name": "External rotation lag sign", "aliases": ["ER lag", "ERLS", "Lag sign"], "category_id": "special", "subcategory_id": "special_rotator_cuff_integrity", "is_side_specific": false, "results": {"single": {"result_text": "Negative. Able to hold position; no lag.", "patient_wording": "No pain, just effort."}}, "response_flag": "", "caution_note": "", "display_order": 67, "active_status": true}, {"test_card_id": "sp_liftoff", "test_name": "Lift-off test", "aliases": ["Gerber's lift-off", "Lift off", "Subscapularis lift-off"], "category_id": "special", "subcategory_id": "special_rotator_cuff_integrity", "is_side_specific": false, "results": {"single": {"result_text": "Negative for subscapularis weakness. Mild anterior discomfort only.", "patient_wording": "A little uncomfortable, but not the main pain."}}, "response_flag": "", "caution_note": "", "display_order": 68, "active_status": true}, {"test_card_id": "sp_bearhug", "test_name": "Bear hug test", "aliases": ["Bear hug"], "category_id": "special", "subcategory_id": "special_rotator_cuff_integrity", "is_side_specific": false, "results": {"single": {"result_text": "Negative. No clear weakness or familiar pain.", "patient_wording": "No, not the same pain."}}, "response_flag": "", "caution_note": "", "display_order": 69, "active_status": true}, {"test_card_id": "sp_speeds", "test_name": "Speed's test", "aliases": ["Speeds", "Speed test", "Biceps resistance test"], "category_id": "special", "subcategory_id": "special_long_head_of_biceps", "is_side_specific": false, "results": {"single": {"result_text": "Mild to moderate anterior shoulder discomfort 3-4/10. Partly familiar, but less similar and less intense than cuff-loading tests.", "patient_wording": "That is uncomfortable at the front, but not quite the main pain I get when I swing."}}, "response_flag": "", "caution_note": "", "display_order": 70, "active_status": true}, {"test_card_id": "sp_yergason", "test_name": "Yergason's test", "aliases": ["Yergasons", "Supination resistance test"], "category_id": "special", "subcategory_id": "special_long_head_of_biceps", "is_side_specific": false, "results": {"single": {"result_text": "Mild local anterior discomfort 2/10. No snapping. Does not clearly reproduce familiar golf pain.", "patient_wording": "Tender at the front, but not the same."}}, "response_flag": "", "caution_note": "", "display_order": 71, "active_status": true}, {"test_card_id": "sp_apprehension", "test_name": "Apprehension / relocation", "aliases": ["Apprehension test", "Relocation test", "Crank apprehension"], "category_id": "special", "subcategory_id": "special_instability", "is_side_specific": false, "results": {"single": {"result_text": "Mild anterior stretch discomfort at end-range abduction/ER but no apprehension, guarding or sense of slipping. Relocation produces no meaningful change.", "patient_wording": "It stretches a bit, but I do not feel like it will come out."}}, "response_flag": "", "caution_note": "", "display_order": 72, "active_status": true}, {"test_card_id": "sp_loadshift", "test_name": "Load and shift", "aliases": ["Load shift test"], "category_id": "special", "subcategory_id": "special_instability", "is_side_specific": false, "results": {"single": {"result_text": "Normal physiological translation bilaterally with firm end-feel. No apprehension.", "patient_wording": "I can feel movement, but it does not feel unstable."}}, "response_flag": "", "caution_note": "", "display_order": 73, "active_status": true}, {"test_card_id": "sp_postdrawer", "test_name": "Posterior drawer", "aliases": ["Posterior drawer test"], "category_id": "special", "subcategory_id": "special_instability", "is_side_specific": false, "results": {"single": {"result_text": "Normal posterior translation, firm end-feel, no apprehension or familiar pain.", "patient_wording": "Just pressure."}}, "response_flag": "", "caution_note": "", "display_order": 74, "active_status": true}, {"test_card_id": "sp_sulcus", "test_name": "Sulcus sign", "aliases": ["Sulcus test"], "category_id": "special", "subcategory_id": "special_instability", "is_side_specific": false, "results": {"single": {"result_text": "Negative bilaterally. Mild traction sensation only.", "patient_wording": "I feel the pull, but no pain."}}, "response_flag": "", "caution_note": "", "display_order": 75, "active_status": true}, {"test_card_id": "sp_obrien", "test_name": "O'Brien's active compression", "aliases": ["O'Briens", "OBrien test", "Active compression test"], "category_id": "special", "subcategory_id": "special_slap_labral", "is_side_specific": false, "results": {"single": {"result_text": "Thumb-down produces anterior discomfort 3/10. Palm-up slightly easier but not clearly abolished. No deep joint pain, catching, clunking or instability.", "patient_wording": "It is uncomfortable at the front, but I do not feel anything deep or catching."}}, "response_flag": "", "caution_note": "", "display_order": 76, "active_status": true}, {"test_card_id": "sp_bicepsload", "test_name": "Biceps Load II", "aliases": ["Biceps load 2", "Biceps load test"], "category_id": "special", "subcategory_id": "special_slap_labral", "is_side_specific": false, "results": {"single": {"result_text": "Mild anterior shoulder discomfort 2-3/10 only. No deep pain, click, catch or familiar golf pain.", "patient_wording": "A bit uncomfortable, but not the main pain."}}, "response_flag": "", "caution_note": "", "display_order": 77, "active_status": true}, {"test_card_id": "sp_scarf", "test_name": "Scarf / cross-body adduction", "aliases": ["Scarf test", "Cross body adduction", "Horizontal adduction test"], "category_id": "special", "subcategory_id": "special_acj", "is_side_specific": false, "results": {"single": {"result_text": "Posterior shoulder stretch and mild superior shoulder pressure 2/10. No focal ACJ pain and no familiar anterior/lateral shoulder pain.", "patient_wording": "I feel a stretch and pressure, but that is not my usual pain."}}, "response_flag": "", "caution_note": "", "display_order": 78, "active_status": true}, {"test_card_id": "sp_ssm_thoracic", "test_name": "Shoulder symptom modification — thoracic extension", "aliases": ["Thoracic extension SMP", "SSMP thoracic"], "category_id": "special", "subcategory_id": "special_symptom_modification", "is_side_specific": false, "results": {"single": {"result_text": "Pain: 4/10 → 3/10\nPainful arc: 80–120° → 90–140°", "patient_wording": "\"That feels a little easier.\""}}, "response_flag": "", "caution_note": "", "display_order": 79, "active_status": true}, {"test_card_id": "sp_ssm_scap", "test_name": "Shoulder symptom modification — scapular assistance/reposition", "aliases": ["Scap assist", "Scapular assistance test", "SAT", "Scapular reposition"], "category_id": "special", "subcategory_id": "special_symptom_modification", "is_side_specific": false, "results": {"single": {"result_text": "Pain: 4/10 → 2/10\nPainful arc: 80–120° → 110–160°", "patient_wording": "That feels a little easier, but I can still feel it."}}, "response_flag": "Symptom modification positive", "caution_note": "", "display_order": 80, "active_status": true}, {"test_card_id": "cn_arom", "test_name": "Cervical AROM", "aliases": ["Neck AROM", "Cervical screen", "Cervical clearing"], "category_id": "cervneuro", "subcategory_id": "cervneuro_cervical_arom", "is_side_specific": false, "results": {"single": {"result_text": "Full range. Mild general neck tightness only; no reproduction of shoulder pain.", "patient_wording": "My neck is a little tight, but it is not the shoulder pain."}}, "response_flag": "", "caution_note": "", "display_order": 81, "active_status": true}, {"test_card_id": "cn_dermatomes", "test_name": "Dermatomes", "aliases": ["Sensation testing", "Light touch testing"], "category_id": "cervneuro", "subcategory_id": "cervneuro_dermatomes", "is_side_specific": false, "results": {"single": {"result_text": "Grossly normal bilaterally.", "patient_wording": ""}}, "response_flag": "", "caution_note": "", "display_order": 82, "active_status": false}, {"test_card_id": "cn_myotomes", "test_name": "Myotomes", "aliases": ["Myotome testing"], "category_id": "cervneuro", "subcategory_id": "cervneuro_myotomes", "is_side_specific": false, "results": {"single": {"result_text": "Grossly normal bilaterally outside pain-limited shoulder tests.", "patient_wording": ""}}, "response_flag": "", "caution_note": "", "display_order": 83, "active_status": false}, {"test_card_id": "cn_reflexes", "test_name": "Reflexes", "aliases": ["DTR", "Deep tendon reflexes", "Biceps reflex", "Triceps reflex"], "category_id": "cervneuro", "subcategory_id": "cervneuro_reflexes", "is_side_specific": false, "results": {"single": {"result_text": "Biceps, brachioradialis and triceps reflexes present and symmetrical.", "patient_wording": ""}}, "response_flag": "", "caution_note": "", "display_order": 84, "active_status": false}, {"test_card_id": "cn_ulnt", "test_name": "Upper limb neurodynamic tests", "aliases": ["ULNT", "ULTT", "Neurodynamic tests", "Median nerve test"], "category_id": "cervneuro", "subcategory_id": "cervneuro_neurodynamic_tests", "is_side_specific": false, "results": {"single": {"result_text": "Mild stretch sensation only, no reproduction of familiar shoulder pain or distal symptoms.", "patient_wording": "I feel a stretch, not pins and needles and not my usual pain."}}, "response_flag": "", "caution_note": "", "display_order": 85, "active_status": false}, {"test_card_id": "card_mrsw6zzo_rt5v6", "active_status": true, "test_name": "Upper Traps MMT", "aliases": [], "category_id": "mmt", "subcategory_id": "mmt_scapular_muscles", "is_side_specific": true, "results": {"right": {"result_text": "5/5 pain free", "patient_wording": ""}, "left": {"result_text": "5/5 pain free", "patient_wording": ""}}, "response_flag": "", "caution_note": "", "display_order": 2}]};
+  seededCase.created_at = seededCase.created_at || nowISO();
+  seededCase.updated_at = seededCase.updated_at || nowISO();
   return {
     version: 2,
     settings: { adminPass: "PTY1015MSK1", spPass: "MSK1CA2" },
-    cases: [{
-      case_id: "pty1015_ca2_shoulder_alice_johnson",
-      case_name: "PTY1015 Alice Johnson Shoulder Case",
-      description: "Student release cards — taught tests only. Use these cards when students perform or explicitly request a test. The model/SP does not need to act. Read the result and the patient wording where relevant. Mild discomfort on some non-primary tests reflects local tissue sensitisation; it should not be treated as equivalent to reproduction of the familiar golf-related pain. Student-facing interpretation prompt (after findings recorded): decide whether each response reproduces the patient's familiar pain, creates local/non-specific discomfort, or is negative. Prioritise findings that reproduce the familiar golf-related anterior/lateral shoulder pain under elevation and cuff-loading demands.",
-      assessment_name: "PTY1015 CA2 Practical",
-      created_by: "admin", created_at: nowISO(), updated_at: nowISO(),
-      locked_status: false,
-      categories: cats,
-      test_cards: testCards
-    }],
+    cases: [seededCase],
     logs: [],
     audit: []
   };
 }
-
 /* ---------------- app controller ---------------- */
 const App = {
   session: null,        // {sp, caseId, sessionName, group}
@@ -853,7 +400,6 @@ const App = {
   searchQ: "",
   currentTab: "cases",
   editorCaseId: null,
-
   init(){
     loadDB();
     const ses = sessionStorage.getItem(SES_KEY);
@@ -866,13 +412,11 @@ const App = {
     }
     this.show("s-role");
   },
-
   show(id){
     document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
     $(id).classList.add("active");
     window.scrollTo(0,0);
   },
-
   /* ============ SP session ============ */
   gotoSPSetup(){
     const sel = $("sp-case");
@@ -880,7 +424,6 @@ const App = {
       `<option value="${esc(c.case_id)}">${esc(c.case_name)}${c.locked_status?" (locked)":""}</option>`).join("");
     this.show("s-sp-setup");
   },
-
   startSPSession(){
     const sp = $("sp-name").value.trim();
     const caseId = $("sp-case").value;
@@ -893,7 +436,6 @@ const App = {
     sessionStorage.setItem(SES_KEY, JSON.stringify(this.session));
     this.enterSP();
   },
-
   enterSP(){
     const cs = getCase(this.session.caseId);
     $("h-case").textContent = cs.case_name;
@@ -908,7 +450,6 @@ const App = {
     this.show("s-sp");
     this.renderSP();
   },
-
   changeGroup(){
     const g = prompt("Enter new group number:", this.session.group);
     if (g === null) return;
@@ -919,14 +460,12 @@ const App = {
     $("h-group").textContent = gv;
     toast("Now logging access for group " + gv);
   },
-
   endSPSession(){
     if (!confirm("End this session? Access logs are kept.")) return;
     this.session = null;
     sessionStorage.removeItem(SES_KEY);
     this.show("s-role");
   },
-
   setFont(fs, silent){
     $("s-sp").setAttribute("data-fs", fs);
     sessionStorage.setItem("PTY1015_FS", fs);
@@ -934,20 +473,17 @@ const App = {
       b.classList.toggle("on", b.dataset.fs === fs));
     if (!silent) toast("Font size: " + fs.toUpperCase());
   },
-
   /* ============ SP search & browse ============ */
   onSearch(q){
     this.searchQ = q;
     this.renderSP();
   },
-
   renderSP(){
     const cs = getCase(this.session.caseId);
     const content = $("sp-content");
     const crumb = $("sp-crumb");
     const q = this.searchQ.trim();
     this.updateNavButtons();
-
     if (q){
       crumb.innerHTML = `Search results for “${esc(q)}” &nbsp;·&nbsp; <a onclick="App.clearSearch()">clear</a>`;
       const hits = this.searchCards(cs, q);
@@ -957,7 +493,6 @@ const App = {
            <button class="btn" onclick="App.clearSearch()">Browse categories</button></div>`;
       return;
     }
-
     const b = this.browse;
     if (!b.cat){
       crumb.textContent = "Browse by category";
@@ -970,7 +505,6 @@ const App = {
       }).join("") + `</div>`;
       return;
     }
-
     const cat = getCat(cs, b.cat);
     if (!b.sub){
       crumb.innerHTML = `<a onclick="App.openHome()">All categories</a> › ${esc(cat.category_name)}`;
@@ -983,7 +517,6 @@ const App = {
       }).join("") + `</div>`;
       return;
     }
-
     crumb.innerHTML = `<a onclick="App.openHome()">All categories</a> ›
       <a onclick="App.openCat('${esc(cat.category_id)}')">${esc(cat.category_name)}</a> ›
       ${esc(subName(cs, b.cat, b.sub))}`;
@@ -994,12 +527,10 @@ const App = {
       ? cards.map(c=>this.previewHTML(cs, c, "browse")).join("")
       : `<div class="empty-note">No tests in this subcategory.</div>`;
   },
-
   clearSearch(){ this.searchQ=""; $("sp-search").value=""; this.renderSP(); },
   openHome(){ this.browse={cat:null,sub:null}; this.renderSP(); },
   openCat(id){ this.browse={cat:id,sub:null}; this.renderSP(); },
   openSub(id){ this.browse.sub=id; this.renderSP(); },
-
   goBack(){
     if (this.searchQ.trim()) { this.clearSearch(); return; }
     if (this.browse.sub) { this.browse.sub = null; }
@@ -1016,7 +547,6 @@ const App = {
     $("sp-back").disabled = atHome;
     $("sp-home").disabled = atHome;
   },
-
   previewHTML(cs, card, source){
     return `<div class="preview">
       <div>
@@ -1028,7 +558,6 @@ const App = {
       <button class="btn primary" onclick="App.openCard('${esc(card.test_card_id)}','${source}')">Open result</button>
     </div>`;
   },
-
   searchCards(cs, q){
     const qn = norm(q);
     if (!qn) return [];
@@ -1060,10 +589,8 @@ const App = {
     scored.sort((a,b)=> b[0]-a[0] || (a[1].display_order||0)-(b[1].display_order||0));
     return scored.map(s=>s[1]);
   },
-
   /* ============ result card & release logging ============ */
   openCardCtx: null, // {cardId, source}
-
   openCard(cardId, source){
     this.openCardCtx = { cardId, source };
     const cs = getCase(this.session.caseId);
@@ -1094,7 +621,6 @@ const App = {
       this.logRelease(cs, card, "not_side_specific", source);
     }
   },
-
   showSide(side){
     const cs = getCase(this.session.caseId);
     const card = cs.test_cards.find(t=>t.test_card_id===this.openCardCtx.cardId);
@@ -1103,7 +629,6 @@ const App = {
     this.renderResults(card, side);
     this.logRelease(cs, card, side, this.openCardCtx.source);
   },
-
   resultBlock(label, r){
     if (!r || !r.result_text) return `<div class="result-block">
       <div class="side-lab">${esc(label)}</div>
@@ -1114,7 +639,6 @@ const App = {
       ${r.patient_wording ? `<div class="pwording">“${esc(r.patient_wording)}”</div>` : ""}
     </div>`;
   },
-
   renderResults(card, side){
     const wrap = $("side-results");
     const R = card.results || {};
@@ -1132,12 +656,10 @@ const App = {
     html += `<div class="logged-note">✓ Logged as released to group ${esc(this.session.group)}.</div>`;
     wrap.innerHTML = html;
   },
-
   closeCard(){
     $("card-overlay").classList.remove("open");
     this.openCardCtx = null;
   },
-
   logRelease(cs, card, side, source){
     const s = this.session;
     const prior = DB.logs.some(l =>
@@ -1171,10 +693,8 @@ const App = {
     });
     saveDB();
   },
-
   /* ============ admin: auth & tabs ============ */
   gotoAdminLogin(){ $("admin-pass").value=""; this.show("s-admin-login"); },
-
   adminLogin(){
     if ($("admin-pass").value !== DB.settings.adminPass){ toast("Incorrect passcode."); return; }
     this.adminAuthed = true;
@@ -1182,7 +702,6 @@ const App = {
     this.adminTab("cases");
   },
   adminLogout(){ this.adminAuthed=false; this.show("s-role"); },
-
   adminTab(tab){
     this.currentTab = tab;
     document.querySelectorAll("#admin-tabs button").forEach(b=>
@@ -1191,7 +710,6 @@ const App = {
       logs:this.renderLogs, io:this.renderIO, settings:this.renderSettings };
     render[tab].call(this);
   },
-
   /* ============ admin: cases ============ */
   renderCases(){
     const body = $("admin-body");
@@ -1220,7 +738,6 @@ const App = {
       <div class="panel-h">Lock / unlock history</div>
       ${this.auditTable()}`;
   },
-
   auditTable(){
     const rows = DB.audit.slice().reverse().slice(0,40);
     if (!rows.length) return `<p class="muted">No audit entries yet.</p>`;
@@ -1230,7 +747,6 @@ const App = {
         <td>${esc(a.action)}</td><td>${esc(a.detail)}</td></tr>`).join("")}
       </tbody></table>`;
   },
-
   newCase(){
     this.caseForm(null);
   },
@@ -1301,10 +817,8 @@ const App = {
     audit(id, "case_deleted", cs.case_name);
     saveDB(); this.renderCases();
   },
-
   /* ============ admin: structure & cards editor ============ */
   openEditorFor(id){ this.editorCaseId = id; this.adminTab("editor"); },
-
   renderEditor(){
     const body = $("admin-body");
     if (!DB.cases.length){ body.innerHTML = `<p class="muted">Create a case first.</p>`; return; }
@@ -1334,7 +848,6 @@ const App = {
         </div>
       </div>`;
   },
-
   catListHTML(cs, locked){
     const cats = (cs.categories||[]).slice().sort((a,b)=>a.display_order-b.display_order);
     if (!cats.length) return `<p class="muted">No categories yet.</p>`;
@@ -1362,7 +875,6 @@ const App = {
         </div>`).join("")}
     `).join("");
   },
-
   cardListHTML(cs, locked){
     const cards = cs.test_cards.slice().sort((a,b)=>{
       const ca = getCat(cs,a.category_id), cb = getCat(cs,b.category_id);
@@ -1383,12 +895,10 @@ const App = {
         </div>
       </div>`).join("");
   },
-
   guardLocked(cs){
     if (cs.locked_status){ toast("Case is locked. Unlock it under Cases first."); return true; }
     return false;
   },
-
   addCategory(){
     const cs = getCase(this.editorCaseId); if (this.guardLocked(cs)) return;
     const name = prompt("Category name:"); if (!name) return;
@@ -1474,7 +984,6 @@ const App = {
     cs.test_cards = cs.test_cards.filter(x=>x.test_card_id!==id);
     audit(cs.case_id,"card_deleted",t.test_name); saveDB(); this.renderEditor();
   },
-
   /* ============ admin: test card form ============ */
   cardForm(cardId){
     const cs = getCase(this.editorCaseId);
@@ -1511,7 +1020,6 @@ const App = {
       </div>
       <div class="field"><label>Caution note (optional)</label>
         <input type="text" id="tf-caution" value="${esc(t?t.caution_note:"")}"></div>
-
       <div id="tf-sides-yes">
         <div class="panel-h">Right side</div>
         <div class="field"><label>Result text</label><textarea id="tf-r-result">${g("right","result_text")}</textarea></div>
@@ -1529,7 +1037,6 @@ const App = {
         <div class="field"><label>Result text</label><textarea id="tf-s-result">${g("single","result_text") || g("not_side_specific","result_text")}</textarea></div>
         <div class="field"><label>Patient wording (optional)</label><input type="text" id="tf-s-pw" value="${g("single","patient_wording") || g("not_side_specific","patient_wording")}"></div>
       </div>
-
       <div class="row" style="margin-top:.6rem">
         <button class="btn primary" onclick="App.saveCard(${t?"'"+esc(t.test_card_id)+"'":"null"})">Save test card</button>
         <button class="btn ghost" onclick="App.closeModal()">Cancel</button>
@@ -1538,7 +1045,6 @@ const App = {
     this.refreshSubSelect(t ? t.subcategory_id : null);
     this.refreshSideFields();
   },
-
   refreshSubSelect(selected){
     const cs = getCase(this.editorCaseId);
     const cat = getCat(cs, $("tf-cat").value);
@@ -1547,13 +1053,11 @@ const App = {
       ? subs.map(s=>`<option value="${esc(s.subcategory_id)}" ${s.subcategory_id===selected?"selected":""}>${esc(s.subcategory_name)}</option>`).join("")
       : `<option value="">(no subcategories — add one first)</option>`;
   },
-
   refreshSideFields(){
     const yes = $("tf-side").value === "yes";
     $("tf-sides-yes").style.display = yes ? "" : "none";
     $("tf-sides-no").style.display = yes ? "none" : "";
   },
-
   saveCard(id){
     const cs = getCase(this.editorCaseId);
     if (this.guardLocked(cs)) return;
@@ -1591,12 +1095,9 @@ const App = {
     }
     cs.updated_at = nowISO(); saveDB(); this.closeModal(); this.renderEditor(); toast("Test card saved.");
   },
-
   closeModal(){ $("edit-modal").classList.remove("open"); },
-
   /* ============ admin: access log ============ */
   logFilters: {},
-
   renderLogs(){
     const body = $("admin-body");
     const f = this.logFilters;
@@ -1645,13 +1146,10 @@ const App = {
         </tbody></table></div>`
         : `<p class="muted">No log entries match the current filters.</p>`}`;
   },
-
   setLogFilter(k,v){ if (v) this.logFilters[k]=v; else delete this.logFilters[k]; this.renderLogs(); },
-
   filteredLogs(){
     return DB.logs.filter(l => Object.entries(this.logFilters).every(([k,v]) => l[k]===v));
   },
-
   groupSummaryHTML(logs){
     const byGroup = {};
     logs.forEach(l=>{
@@ -1671,7 +1169,6 @@ const App = {
         </div>
       </div>`).join("");
   },
-
   exportLogs(fmt){
     const logs = this.filteredLogs();
     if (fmt==="json"){
@@ -1686,19 +1183,16 @@ const App = {
     }
     toast("Log exported.");
   },
-
   exportGroup(group){
     const logs = DB.logs.filter(l=>l.group_number===group);
     download(`pty1015_group_${group}_releases.json`, JSON.stringify(logs, null, 2));
     toast("Group " + group + " log exported.");
   },
-
   clearLogs(){
     if (!confirm("Delete ALL access logs on this device? Export first if you need them.")) return;
     if (!confirm("This cannot be undone. Confirm deletion of all logs?")) return;
     DB.logs = []; saveDB(); this.renderLogs(); toast("Logs cleared.");
   },
-
   /* ============ admin: import / export ============ */
   renderIO(){
     const body = $("admin-body");
@@ -1707,7 +1201,6 @@ const App = {
       <p class="muted" style="margin-bottom:1.4rem;max-width:62ch">
         All data lives in this browser on this device. To set up SP tablets, export the case here and
         import it on each tablet. After the assessment, export each tablet's access log and consolidate.</p>
-
       <div class="io-block card">
         <div class="panel-h" style="margin-top:0">Export case</div>
         <div class="field"><label>Case</label>
@@ -1717,7 +1210,6 @@ const App = {
           <button class="btn" onclick="App.exportCase('structure')">Category structure only — JSON</button>
         </div>
       </div>
-
       <div class="io-block card">
         <div class="panel-h" style="margin-top:0">Import case</div>
         <p class="muted" style="font-size:.88rem;margin-bottom:.7rem">
@@ -1729,7 +1221,6 @@ const App = {
           <textarea id="io-paste" placeholder='{"case_id": "...", "case_name": "...", "categories": [...], "test_cards": [...]}'></textarea></div>
         <button class="btn primary" onclick="App.importCase()">Import case</button>
       </div>
-
       <div class="io-block card">
         <div class="panel-h" style="margin-top:0">Logs</div>
         <div class="row">
@@ -1737,7 +1228,6 @@ const App = {
           <button class="btn" onclick="App.exportLogs('csv')">Access log — CSV</button>
         </div>
       </div>
-
       <div class="io-block card">
         <div class="panel-h" style="margin-top:0">Full backup (cases + logs + settings)</div>
         <div class="row">
@@ -1749,7 +1239,6 @@ const App = {
         <p class="muted" style="font-size:.85rem;margin-top:.6rem">Restoring replaces everything on this device.</p>
       </div>`;
   },
-
   exportCase(kind){
     const cs = getCase($("io-case").value);
     if (kind==="structure"){
@@ -1761,7 +1250,6 @@ const App = {
     }
     toast("Exported.");
   },
-
   importCase(){
     const file = $("io-file").files[0];
     const pasted = $("io-paste").value.trim();
@@ -1781,7 +1269,6 @@ const App = {
       toast("Choose a file or paste JSON first.");
     }
   },
-
   ingestCase(obj){
     if (!obj || !obj.case_id || !obj.case_name){
       toast("JSON must include case_id and case_name."); return;
@@ -1825,13 +1312,11 @@ const App = {
     toast(`Imported "${obj.case_name}" — ${obj.test_cards.length} test cards.`);
     this.renderIO();
   },
-
   exportBackup(){
     download("pty1015_lookup_backup_" + new Date().toISOString().slice(0,10) + ".json",
       JSON.stringify(DB, null, 2));
     toast("Backup exported.");
   },
-
   restoreBackup(input){
     const file = input.files[0]; if (!file) return;
     const r = new FileReader();
@@ -1847,7 +1332,6 @@ const App = {
     r.readAsText(file);
     input.value = "";
   },
-
   /* ============ admin: settings ============ */
   renderSettings(){
     $("admin-body").innerHTML = `
@@ -1884,8 +1368,8 @@ const App = {
     $("set-pass").value = ""; toast("Passcode changed.");
   }
 };
-
 document.addEventListener("DOMContentLoaded", () => App.init());
 </script>
 </body>
 </html>
+ 
